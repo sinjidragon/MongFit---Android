@@ -43,7 +43,7 @@ fun MapView() {
         }
     )
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    val nowLocation = remember { mutableStateOf<LatLng?>(null) }
+    val currentLocation = remember { mutableStateOf<LatLng?>(null) }
     val cameraPositionState = rememberCameraPositionState()
 
     LaunchedEffect(Unit) {
@@ -52,8 +52,8 @@ fun MapView() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
                 val latLng = LatLng(it.latitude, it.longitude)
-                nowLocation.value = latLng
-                nowLocation.value?.let { nonNullLocation ->
+                currentLocation.value = latLng
+                currentLocation.value?.let { nonNullLocation ->
                     cameraPositionState.position = CameraPosition.fromLatLngZoom(nonNullLocation, 17f)
                 }
             }
@@ -64,7 +64,7 @@ fun MapView() {
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
     ) {
-        nowLocation.value?.let { location ->
+        currentLocation.value?.let { location ->
             MapMarker(
                 context = context,
                 position = location,
