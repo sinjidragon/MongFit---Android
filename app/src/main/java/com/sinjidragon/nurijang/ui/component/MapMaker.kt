@@ -16,11 +16,11 @@ fun MapMarker(
     @DrawableRes iconResourceId: Int
 ) {
     val icon = vectorToBitmap(
-        context, iconResourceId,130,130
+        context, iconResourceId,160,160, isText = false
     )
     Marker(
         state = MarkerState(position = position),
         title = title,
-        icon = icon,
+        icon = icon
     )
 }
