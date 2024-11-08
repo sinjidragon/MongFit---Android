@@ -27,8 +27,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
 import com.sinjidragon.nurijang.ui.theme.NurijangTheme
-import com.sinjidragon.nurijang.ui.component.MapMarker
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 
 @Composable
@@ -76,7 +76,7 @@ fun MapView() {
         uiSettings = MapUiSettings(zoomControlsEnabled = false)
     ) {
         currentLocation.value?.let { location ->
-            MapMarker(
+            CurrentLocationMarker(
                 context = context,
                 position = location,
                 title = "현재 위치",
