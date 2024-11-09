@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,13 +28,17 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.remote.api.getFacilities
+import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
 import com.sinjidragon.nurijang.ui.theme.NurijangTheme
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
+import com.sinjidragon.nurijang.ui.component.PlaceMaker
 
 @Composable
 fun MapView() {
     val context = LocalContext.current
+    var facilityList by remember {mutableStateOf<List<Facility>>(emptyList())}
     var hasPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -53,33 +58,51 @@ fun MapView() {
     val cameraPositionState = rememberCameraPositionState()
 
     fun moveCurrentLocation() {
+        println(fusedLocationClient.lastLocation)
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
                 val latLng = LatLng(it.latitude, it.longitude)
                 currentLocation.value = latLng
                 currentLocation.value?.let { nonNullLocation ->
                     cameraPositionState.position =
-                        CameraPosition.fromLatLngZoom(nonNullLocation, 17f)
+                        CameraPosition.fromLatLngZoom(nonNullLocation, 13f)
                 }
+            }
+        }
+    }
+    LaunchedEffect(currentLocation.value) {
+        currentLocation.value?.let { location ->
+            val response = getFacilities(location.longitude, location.latitude)
+            if (response != null) {
+                facilityList = response
             }
         }
     }
     LaunchedEffect(Unit) {
         launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        moveCurrentLocation()
+        if (hasPermission) {
+            moveCurrentLocation()
+        }
     }
-
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         properties = MapProperties(),
-        uiSettings = MapUiSettings(zoomControlsEnabled = false)
+        uiSettings = MapUiSettings(zoomControlsEnabled = false),
     ) {
         currentLocation.value?.let { location ->
             CurrentLocationMarker(
                 context = context,
                 position = location,
                 iconResourceId = R.drawable.now_location_icon
+            )
+        }
+        for ( item in facilityList){
+            PlaceMaker(
+                context = context,
+                position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
+                text = item.fcltyNm,
+                iconResourceId = R.drawable.place_maker_icon
             )
         }
     }
