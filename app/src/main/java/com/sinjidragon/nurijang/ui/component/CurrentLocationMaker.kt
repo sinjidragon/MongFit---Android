@@ -23,7 +23,6 @@ fun currentVectorToBitmap(context: Context, vectorResId: Int, width: Int, height
 fun CurrentLocationMarker(
     context: Context,
     position: LatLng,
-    title: String,
     @DrawableRes iconResourceId: Int
 ) {
     val icon = currentVectorToBitmap(
@@ -31,7 +30,6 @@ fun CurrentLocationMarker(
     )
     Marker(
         state = MarkerState(position = position),
-        title = title,
         icon = icon
     )
 }

@@ -79,7 +79,6 @@ fun MapView() {
             CurrentLocationMarker(
                 context = context,
                 position = location,
-                title = "현재 위치",
                 iconResourceId = R.drawable.now_location_icon
             )
         }
