@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.util.TypedValue
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -18,12 +19,20 @@ import android.graphics.Color as AndroidColor
 fun placeVectorToBitmap(
     context: Context,
     vectorResId: Int,
-    width: Int,
-    height: Int,
+    widthDp: Float,
+    heightDp: Float,
     text: String? = null
 ): BitmapDescriptor? {
+    val widthPx = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, widthDp, context.resources.displayMetrics
+    ).toInt()
+    val heightPx = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, heightDp, context.resources.displayMetrics
+    ).toInt()
+
     val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
-    drawable.setBounds(0, 0, width, height)
+    drawable.setBounds(0, 0, widthPx, heightPx)
+
     val paint = Paint().apply {
         color = AndroidColor.parseColor("#11235A")
         textSize = TypedValue.applyDimension(
@@ -32,27 +41,34 @@ fun placeVectorToBitmap(
         typeface = Typeface.create("pretendard", Typeface.NORMAL)
         textAlign = Paint.Align.CENTER
     }
+
     val textHeight = paint.fontMetrics.descent - paint.fontMetrics.ascent
     val textWidth = if (text != null) paint.measureText(text) else 0f
-    val totalWidth = maxOf(width, textWidth.toInt() + 20)
-    val totalHeight = if (text != null) {
-        height + textHeight.toInt() + 20
-    } else {
-        height
-    }
-    val bm = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888)
+
+    val totalWidthPx = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, maxOf(widthDp, (textWidth / context.resources.displayMetrics.density) + 20), context.resources.displayMetrics
+    ).toInt()
+    val totalHeightPx = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, if (text != null) heightDp + (textHeight / context.resources.displayMetrics.density) + 20 else heightDp, context.resources.displayMetrics
+    ).toInt()
+
+    val bm = Bitmap.createBitmap(totalWidthPx, totalHeightPx, Bitmap.Config.ARGB_8888)
     val canvas = android.graphics.Canvas(bm)
-    val iconXPos = (totalWidth - width) / 2
-    val iconYPos = (totalHeight - height - textHeight.toInt()) / 2
-    drawable.setBounds(iconXPos, iconYPos, iconXPos + width, iconYPos + height)
+
+    val iconXPos = (totalWidthPx - widthPx) / 2
+    val iconYPos = (totalHeightPx - heightPx - textHeight.toInt()) / 2
+    drawable.setBounds(iconXPos, iconYPos, iconXPos + widthPx, iconYPos + heightPx)
     drawable.draw(canvas)
+
     if (text != null) {
         val xPos = (canvas.width / 2).toFloat()
-        val yPos = iconYPos + height + textHeight / 2 + 20
+        val yPos = iconYPos + heightPx + textHeight / 2 + 20
         canvas.drawText(text, xPos, yPos, paint)
     }
+
     return BitmapDescriptorFactory.fromBitmap(bm)
 }
+
 
 
 @Composable
@@ -62,7 +78,7 @@ fun PlaceMaker(
     text: String,
     @DrawableRes iconResourceId: Int){
     val icon = placeVectorToBitmap(
-        context, iconResourceId,80,110,text
+        context, iconResourceId,22f,30f,text
     )
     Marker(
         state = MarkerState(position = position),
