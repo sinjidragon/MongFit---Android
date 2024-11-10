@@ -7,18 +7,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
@@ -34,6 +41,8 @@ import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
 import com.sinjidragon.nurijang.ui.theme.NurijangTheme
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 import com.sinjidragon.nurijang.ui.component.PlaceMaker
+import com.sinjidragon.nurijang.ui.theme.dropShadow
+import com.sinjidragon.nurijang.ui.theme.pretendard
 
 @Composable
 fun MapView() {
@@ -65,7 +74,7 @@ fun MapView() {
                 currentLocation.value = latLng
                 currentLocation.value?.let { nonNullLocation ->
                     cameraPositionState.position =
-                        CameraPosition.fromLatLngZoom(nonNullLocation, 13f)
+                        CameraPosition.fromLatLngZoom(nonNullLocation, 16f)
                 }
             }
         }
@@ -97,11 +106,17 @@ fun MapView() {
                 iconResourceId = R.drawable.now_location_icon
             )
         }
-        for ( item in facilityList){
+        for (item in facilityList){
+            val text = if (cameraPositionState.position.zoom >= 16f) {
+                item.fcltyNm
+            } else {
+                ""
+            }
             PlaceMaker(
                 context = context,
                 position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
-                text = item.fcltyNm,
+                text = text
+                ,
                 iconResourceId = R.drawable.place_maker_icon
             )
         }
@@ -111,11 +126,29 @@ fun MapView() {
             .fillMaxSize()
             .systemBarsPadding()
     ) {
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = 68.dp)
+                .clip(RoundedCornerShape(50.dp))
+                .dropShadow(offsetY = 2.dp, blur = 4.dp, color = Color.Black.copy(0.2f)),
+            colors = ButtonDefaults.buttonColors(Color.White),
+        ) {
+            Text(
+                text = "이 지역 검색",
+                color = Color.Black,
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp
+            )
+        }
+
         if (hasPermission) {
             MoveCurrentLocationButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-24).dp,y = (-33).dp)
+                    .offset(x = (-24).dp, y = (-33).dp)
                 ,
                 onClick = { moveCurrentLocation() }
             )
