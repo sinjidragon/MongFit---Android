@@ -40,6 +40,19 @@ fun FacilityDetail(
     facilityDetailAddress: String?,
     onClick: () -> Unit = {},
 ){
+    fun formatTellNumber(number: String): String {
+        if (number.length !in 10..11) return number
+
+        return when {
+            number.startsWith("02") -> {
+                "${number.substring(0, 2)}-${number.substring(2, 6)}-${number.substring(6)}"
+            }
+            number.startsWith("0") -> {
+                "${number.substring(0, 3)}-${number.substring(3, 7)}-${number.substring(7)}"
+            }
+            else -> number
+        }
+    }
     val address = if (facilityDetailAddress == null){
         facilityAddress
     } else {
@@ -99,7 +112,7 @@ fun FacilityDetail(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        text = tellNumber,
+                        text = formatTellNumber(tellNumber),
                         fontFamily = pretendard,
                         fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,

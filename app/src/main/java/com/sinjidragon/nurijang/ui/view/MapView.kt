@@ -209,6 +209,7 @@ fun MapView() {
                             eventName = facility.mainItemNm,
                             facilityAddress = facility.fcltyAddr,
                             facilityDetailAddress = facility.fcltyDetailAddr,
+                            tellNumber = facility.rprsntvTelNo,
                             onClick = {
                                 moveCamera(facility.fcltyCrdntLo,facility.fcltyCrdntLa)
                             }
