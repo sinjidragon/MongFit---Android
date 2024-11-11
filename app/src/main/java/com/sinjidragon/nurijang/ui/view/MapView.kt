@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -59,7 +60,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapView() {
+fun MapView(navController: NavController) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var facilityList by remember {mutableStateOf<List<Facility>>(emptyList())}
@@ -244,6 +245,6 @@ fun MapView() {
 @Composable
 fun GreetingPreview() {
     NurijangTheme {
-        MapView()
+        MapView(navController = NavController(context = LocalContext.current))
     }
 }
