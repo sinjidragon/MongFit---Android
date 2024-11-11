@@ -5,12 +5,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -40,18 +48,22 @@ import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.getFacilities
 import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
+import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.theme.NurijangTheme
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 import com.sinjidragon.nurijang.ui.component.PlaceMaker
 import com.sinjidragon.nurijang.ui.theme.dropShadow
+import com.sinjidragon.nurijang.ui.theme.innerShadow
 import com.sinjidragon.nurijang.ui.theme.pretendard
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapView() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var facilityList by remember {mutableStateOf<List<Facility>>(emptyList())}
+    var showBottomSheet by remember {mutableStateOf(false)}
     var hasPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -82,6 +94,11 @@ fun MapView() {
                 }
             }
         }
+    }
+    fun moveCamera(lo:Double,la:Double){
+        cameraPositionState.move(
+            CameraUpdateFactory.newLatLng(LatLng(la,lo))
+        )
     }
     LaunchedEffect(currentLocation.value) {
         currentLocation.value?.let { location ->
@@ -134,7 +151,7 @@ fun MapView() {
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .offset(y = 68.dp)
-                .size(113.dp,30.dp)
+                .size(113.dp, 30.dp)
                 .dropShadow(
                     offsetY = 2.dp,
                     blur = 4.dp,
@@ -143,15 +160,17 @@ fun MapView() {
                 )
                 .clip(RoundedCornerShape(50.dp))
                 .background(Color.White)
-                .clickable {coroutineScope.launch {
-                    val response = getFacilities(
-                        fcltyCrdntLa = cameraPositionState.position.target.latitude,
-                        fcltyCrdntLo = cameraPositionState.position.target.longitude
-                    )
-                    if (response != null){
-                        facilityList = response
+                .clickable {
+                    coroutineScope.launch {
+                        val response = getFacilities(
+                            fcltyCrdntLa = cameraPositionState.position.target.latitude,
+                            fcltyCrdntLo = cameraPositionState.position.target.longitude
+                        )
+                        if (response != null) {
+                            facilityList = response
+                        }
                     }
-                }},
+                },
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
@@ -162,7 +181,6 @@ fun MapView() {
                 fontSize = 14.sp
             )
         }
-
         if (hasPermission) {
             MoveCurrentLocationButton(
                 modifier = Modifier
@@ -170,6 +188,52 @@ fun MapView() {
                     .offset(x = (-24).dp, y = (-33).dp)
                 ,
                 onClick = { moveCurrentLocation() }
+            )
+        }
+        if (showBottomSheet){
+            ModalBottomSheet(
+                modifier = Modifier
+                    .height(650.dp)
+                    .innerShadow(),
+                onDismissRequest = { showBottomSheet = false },
+                containerColor = Color.White,
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+            ) {
+                LazyColumn (
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ){
+                    items(facilityList){facility ->
+                        FacilityDetail(
+                            modifier = Modifier,
+                            facilityName = facility.fcltyNm,
+                            eventName = facility.mainItemNm,
+                            facilityAddress = facility.fcltyAddr,
+                            facilityDetailAddress = facility.fcltyDetailAddr,
+                            onClick = {
+                                moveCamera(facility.fcltyCrdntLo,facility.fcltyCrdntLa)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(77.dp)
+                .align(Alignment.BottomCenter)
+                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                .background(Color.White)
+                .innerShadow()
+        ){
+            Text(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .offset(y = 18.dp)
+                    .clickable { showBottomSheet = true },
+                text = "목록 표시"
             )
         }
     }
