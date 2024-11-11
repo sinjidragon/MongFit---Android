@@ -36,7 +36,7 @@ fun placeVectorToBitmap(
     val paint = Paint().apply {
         color = AndroidColor.parseColor("#11235A")
         textSize = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP, 17f, context.resources.displayMetrics
+            TypedValue.COMPLEX_UNIT_SP, 14f, context.resources.displayMetrics
         )
         typeface = Typeface.create("pretendard", Typeface.NORMAL)
         textAlign = Paint.Align.CENTER
