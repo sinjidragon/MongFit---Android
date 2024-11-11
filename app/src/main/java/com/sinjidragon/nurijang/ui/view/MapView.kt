@@ -3,19 +3,21 @@ package com.sinjidragon.nurijang.ui.view
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,10 +45,12 @@ import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 import com.sinjidragon.nurijang.ui.component.PlaceMaker
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.pretendard
+import kotlinx.coroutines.launch
 
 @Composable
 fun MapView() {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var facilityList by remember {mutableStateOf<List<Facility>>(emptyList())}
     var hasPermission by remember {
         mutableStateOf(
@@ -126,16 +130,31 @@ fun MapView() {
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        Button(
-            onClick = { /*TODO*/ },
+        Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .offset(y = 68.dp)
+                .size(113.dp,30.dp)
+                .dropShadow(
+                    offsetY = 2.dp,
+                    blur = 4.dp,
+                    color = Color.Black.copy(0.2f),
+                    shape = RoundedCornerShape(50.dp)
+                )
                 .clip(RoundedCornerShape(50.dp))
-                .dropShadow(offsetY = 2.dp, blur = 4.dp, color = Color.Black.copy(0.2f)),
-            colors = ButtonDefaults.buttonColors(Color.White),
+                .background(Color.White)
+                .clickable {coroutineScope.launch {
+                    val response = getFacilities(
+                        fcltyCrdntLa = cameraPositionState.position.target.latitude,
+                        fcltyCrdntLo = cameraPositionState.position.target.longitude
+                    )
+                    if (response != null){
+                        facilityList = response
+                    }
+                }},
         ) {
             Text(
+                modifier = Modifier.align(Alignment.Center),
                 text = "이 지역 검색",
                 color = Color.Black,
                 fontFamily = pretendard,
