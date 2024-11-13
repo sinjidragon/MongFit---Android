@@ -1,21 +1,31 @@
 package com.sinjidragon.nurijang.ui.view
 
 import android.content.pm.PackageManager
+import android.inputmethodservice.Keyboard.Row
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -31,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +65,9 @@ import com.sinjidragon.nurijang.ui.theme.NurijangTheme
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 import com.sinjidragon.nurijang.ui.component.PlaceMaker
 import com.sinjidragon.nurijang.ui.theme.dropShadow
+import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
+import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
 import kotlinx.coroutines.launch
 
@@ -148,6 +161,57 @@ fun MapView(navController: NavController) {
             .fillMaxSize()
             .systemBarsPadding()
     ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .height(44.dp)
+                .align(Alignment.TopCenter),
+        ){
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .dropShadow()
+                    .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth()
+                    .background(Color.White),
+                horizontalArrangement = Arrangement.Start,
+            ){
+                Spacer(modifier = Modifier.width(11.dp))
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically),
+                    painter = painterResource(id = R.drawable.search_icon),
+                    contentDescription = ""
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically),
+                    text = "시설명 종목",
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    color = gray2
+                )
+            }
+            Spacer(modifier = Modifier.width(6.dp))
+            Box(
+                modifier = Modifier
+                    .clickable { }
+                    .clip(RoundedCornerShape(8.dp))
+                    .dropShadow()
+                    .background(mainColor)
+                    .width(40.dp)
+                    .fillMaxHeight(),
+            ) {
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    painter = painterResource(id = R.drawable.mike_icon),
+                    contentDescription = ""
+                )
+            }
+        }
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -173,6 +237,7 @@ fun MapView(navController: NavController) {
                     }
                 },
         ) {
+
             Text(
                 modifier = Modifier.align(Alignment.Center),
                 text = "이 지역 검색",
