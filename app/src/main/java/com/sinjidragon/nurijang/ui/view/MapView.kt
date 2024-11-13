@@ -1,7 +1,6 @@
 package com.sinjidragon.nurijang.ui.view
 
 import android.content.pm.PackageManager
-import android.inputmethodservice.Keyboard.Row
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -23,9 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -170,6 +166,9 @@ fun MapView(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
+                    .clickable {
+                        TODO("검색창으로 이동함")
+                    }
                     .weight(1f)
                     .dropShadow()
                     .clip(RoundedCornerShape(8.dp))
@@ -197,7 +196,9 @@ fun MapView(navController: NavController) {
             Spacer(modifier = Modifier.width(6.dp))
             Box(
                 modifier = Modifier
-                    .clickable { }
+                    .clickable {
+                        TODO("일단 보류기능")
+                    }
                     .clip(RoundedCornerShape(8.dp))
                     .dropShadow()
                     .background(mainColor)
@@ -251,7 +252,7 @@ fun MapView(navController: NavController) {
             MoveCurrentLocationButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-24).dp, y = (-33).dp)
+                    .offset(x = (-24).dp, y = (-81).dp)
                 ,
                 onClick = { moveCurrentLocation() }
             )
