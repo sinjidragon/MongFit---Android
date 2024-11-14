@@ -65,6 +65,7 @@ import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
+import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -167,7 +168,7 @@ fun MapView(navController: NavController) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .clickable {
-                        TODO("검색창으로 이동함")
+                        navController.navigate(NavGroup.SEARCH)
                     }
                     .weight(1f)
                     .dropShadow()
@@ -264,7 +265,8 @@ fun MapView(navController: NavController) {
                     .innerShadow(),
                 onDismissRequest = { showBottomSheet = false },
                 containerColor = Color.White,
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                scrimColor = Color.Transparent
             ) {
                 LazyColumn (
                     verticalArrangement = Arrangement.spacedBy(14.dp)
