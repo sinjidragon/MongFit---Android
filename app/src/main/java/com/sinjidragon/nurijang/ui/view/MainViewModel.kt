@@ -16,11 +16,18 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val _isLaunched = MutableLiveData<Boolean>(false)
     val isLaunched : LiveData<Boolean> = _isLaunched
 
+    private val _cameraPosition = MutableLiveData<LatLng>(LatLng(37.532600,127.024612))
+    val cameraPosition : LiveData<LatLng> = _cameraPosition
+
     fun setData(data: List<Facility>) {
         _facilityList.value = data
     }
 
     fun setLaunched() {
         _isLaunched.value = true
+    }
+
+    fun setCameraPosition(la: Double, lo: Double) {
+        _cameraPosition.value = LatLng(la,lo)
     }
 }
