@@ -28,32 +28,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
-import com.sinjidragon.nurijang.remote.api.suggestions
-import com.sinjidragon.nurijang.remote.data.facility
+import com.sinjidragon.nurijang.remote.data.FacilityLite
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
-import kotlinx.coroutines.launch
 
 @Composable
-fun SearchView(navController: NavController){
+fun SearchView(navController: NavController,mainViewModel: MainViewModel){
     var searchText by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     var eventList by remember {
         mutableStateOf<List<String>>(emptyList())
     }
     var facilityList by remember {
-        mutableStateOf<List<facility>>(emptyList())
+        mutableStateOf<List<FacilityLite>>(emptyList())
     }
     Box(
         modifier = Modifier
@@ -146,8 +142,5 @@ fun SearchView(navController: NavController){
         }
     }
 }
-@Preview
-@Composable
-fun SearchViewPreview(){
-    SearchView(navController = NavController(LocalContext.current))
-}
+
+

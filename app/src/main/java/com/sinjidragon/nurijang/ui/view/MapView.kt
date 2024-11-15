@@ -1,6 +1,7 @@
 package com.sinjidragon.nurijang.ui.view
 
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -54,10 +57,8 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.getFacilities
-import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
-import com.sinjidragon.nurijang.ui.theme.NurijangTheme
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 import com.sinjidragon.nurijang.ui.component.PlaceMaker
 import com.sinjidragon.nurijang.ui.theme.dropShadow
@@ -70,10 +71,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapView(navController: NavController) {
+fun MapView(navController: NavController,mainViewModel: MainViewModel) {
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val isLaunched = mainViewModel.isLaunched.value ?:false
+
+    LaunchedEffect(currentBackStackEntry) {
+        if (currentBackStackEntry?.destination?.route == "map") {
+            print("하하")
+        }
+    }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var facilityList by remember {mutableStateOf<List<Facility>>(emptyList())}
+    val facilityList by mainViewModel.facilityList.observeAsState(emptyList())
     var showBottomSheet by remember {mutableStateOf(false)}
     var hasPermission by remember {
         mutableStateOf(
@@ -115,14 +124,18 @@ fun MapView(navController: NavController) {
         currentLocation.value?.let { location ->
             val response = getFacilities(location.longitude, location.latitude)
             if (response != null) {
-                facilityList = response
+                mainViewModel.setData(response)
             }
         }
     }
     LaunchedEffect(Unit) {
-        launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        if (hasPermission) {
-            moveCurrentLocation()
+        Log.d("adfs","$isLaunched")
+        if (!isLaunched) {
+            launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            if (hasPermission) {
+                moveCurrentLocation()
+            }
+            mainViewModel.setLaunched()
         }
     }
     GoogleMap(
@@ -234,7 +247,7 @@ fun MapView(navController: NavController) {
                             fcltyCrdntLo = cameraPositionState.position.target.longitude
                         )
                         if (response != null) {
-                            facilityList = response
+                            mainViewModel.setData(response)
                         }
                     }
                 },
@@ -306,13 +319,5 @@ fun MapView(navController: NavController) {
                 text = "목록 표시"
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NurijangTheme {
-        MapView(navController = NavController(context = LocalContext.current))
     }
 }
