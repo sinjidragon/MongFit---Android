@@ -58,13 +58,16 @@ fun FacilityDetail(
         }
     }
     fun formatDistance(distance: Double): String {
-        val distanceInMeters = distance *1000
+        val distanceInMeters = distance * 1000
+        val distanceInKm = distanceInMeters / 1000
+
         return when {
-            distanceInMeters >= 10_000 -> "${(distanceInMeters / 1_000).toInt()}km" // 10km 이상
-            distanceInMeters >= 1_000 -> String.format("%.1fkm", distanceInMeters / 1_000) // 1km 이상 10km 미만
-            else -> "${distanceInMeters.toInt()}m" // 1km 미만
+            distanceInKm >= 10 -> "${distanceInKm.toInt()}km"
+            distanceInKm >= 1 -> String.format("%.1fkm", distanceInKm)
+            else -> "${distanceInMeters.toInt()}m"
         }
     }
+
     val address = if (facilityDetailAddress == null){
         facilityAddress
     } else {
