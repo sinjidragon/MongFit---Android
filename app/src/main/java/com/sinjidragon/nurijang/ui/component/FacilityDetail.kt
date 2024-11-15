@@ -4,14 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +38,7 @@ fun FacilityDetail(
     modifier: Modifier,
     facilityName: String,
     eventName: String,
+    distance : Double,
     tellNumber: String? = null,
     facilityAddress: String,
     facilityDetailAddress: String?,
@@ -51,6 +55,14 @@ fun FacilityDetail(
                 "${number.substring(0, 3)}-${number.substring(3, 7)}-${number.substring(7)}"
             }
             else -> number
+        }
+    }
+    fun formatDistance(distance: Double): String {
+        val distanceInMeters = distance *1000
+        return when {
+            distanceInMeters >= 10_000 -> "${(distanceInMeters / 1_000).toInt()}km" // 10km 이상
+            distanceInMeters >= 1_000 -> String.format("%.1fkm", distanceInMeters / 1_000) // 1km 이상 10km 미만
+            else -> "${distanceInMeters.toInt()}m" // 1km 미만
         }
     }
     val address = if (facilityDetailAddress == null){
@@ -79,6 +91,24 @@ fun FacilityDetail(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = gray2
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(2.dp, 2.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black)
+                            .offset()
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        text = formatDistance(distance),
+                        fontFamily = pretendard,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
                     )
                 }
             }
@@ -134,7 +164,7 @@ fun FacilityDetail(
                     .clip(RoundedCornerShape(12.dp))
                     .background(subColor)
                     .align(Alignment.End)
-                    .clickable {onClick() },
+                    .clickable { onClick() },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ){
@@ -161,8 +191,9 @@ fun FacilityDetailPreview(
         modifier = Modifier,
         facilityName = "구지 시민 체육관",
         eventName = "기타 종목",
-        tellNumber = "010_23-1230",
+        tellNumber = "01023231230",
         facilityAddress = "대구광역시",
-        facilityDetailAddress = "구지면 창리로"
+        facilityDetailAddress = "구지면 창리로",
+        distance = 123.123
     )
 }

@@ -295,6 +295,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                             facilityAddress = facility.fcltyAddr,
                             facilityDetailAddress = facility.fcltyDetailAddr,
                             tellNumber = facility.rprsntvTelNo,
+                            distance = facility.distance,
                             onClick = {
                                 moveCamera(facility.fcltyCrdntLo,facility.fcltyCrdntLa)
                             }
