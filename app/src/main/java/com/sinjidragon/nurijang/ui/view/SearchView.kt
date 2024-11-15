@@ -1,11 +1,11 @@
 package com.sinjidragon.nurijang.ui.view
 
-import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -36,13 +36,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.Circle
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.suggestions
 import com.sinjidragon.nurijang.remote.data.FacilityLite
@@ -164,11 +161,28 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                 )
             }
         }
-        LazyColumn {
-            items(eventList){ item->
-                eventItem(
-                    text = item
-                )
+        Column (
+            modifier = Modifier
+                .offset(y = 70.dp)
+        ){
+            LazyColumn (
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ){
+                items(eventList) { item ->
+                    eventItem(
+                        text = item
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(14.dp))
+            LazyColumn (
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ){
+                items(facilityList) { item ->
+                    facilityItem(
+                        text = item.fcltyNm
+                    )
+                }
             }
         }
     }

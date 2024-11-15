@@ -4,9 +4,9 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 
 data class SuggestionsResponse (
     val mainItems: List<String>,
-    val facilities: List<facility>
+    val facilities: List<FacilityLite>
 )
-data class facility(
+data class FacilityLite(
     val id : Int,
     val distance: Double,
     val fcltyNm: String
