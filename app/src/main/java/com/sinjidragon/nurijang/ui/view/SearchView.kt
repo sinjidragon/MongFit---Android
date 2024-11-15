@@ -169,7 +169,7 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ){
                 items(eventList) { item ->
-                    eventItem(
+                    EventItem(
                         text = item
                     )
                 }
@@ -179,7 +179,7 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ){
                 items(facilityList) { item ->
-                    facilityItem(
+                    FacilityItem(
                         text = item.fcltyNm
                     )
                 }
@@ -188,7 +188,7 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
     }
 }
 @Composable
-fun eventItem(
+fun EventItem(
     text: String = "태권도",
     onClick: () -> Unit = {}
 ){
@@ -237,7 +237,7 @@ fun eventItem(
     }
 }
 @Composable
-fun facilityItem(
+fun FacilityItem(
     text: String = "구지 체육관",
     onClick: () -> Unit = {}
 ){
