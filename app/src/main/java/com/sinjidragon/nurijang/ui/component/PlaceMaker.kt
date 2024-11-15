@@ -7,7 +7,6 @@ import android.graphics.Typeface
 import android.util.TypedValue
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -76,12 +75,17 @@ fun PlaceMaker(
     context: Context,
     position: LatLng,
     text: String,
+    onClick: () -> Unit = {},
     @DrawableRes iconResourceId: Int){
     val icon = placeVectorToBitmap(
         context, iconResourceId,22f,30f,text
     )
     Marker(
         state = MarkerState(position = position),
-        icon = icon
+        icon = icon,
+        onClick = {
+            onClick() // 클릭 이벤트 호출
+            true // 이벤트 소비
+        }
     )
 }
