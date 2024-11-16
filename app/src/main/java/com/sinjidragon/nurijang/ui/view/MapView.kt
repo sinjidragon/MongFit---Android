@@ -73,7 +73,10 @@ import kotlinx.coroutines.launch
 fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val isLaunched = mainViewModel.isLaunched.value ?:false
-
+    val selectFacility = mainViewModel.selectFacility.value
+    var isSelected by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
             print("하하")
@@ -159,8 +162,12 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
             PlaceMaker(
                 context = context,
                 position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
-                text = text
-                ,
+                text = text,
+                onClick = {
+                    mainViewModel.setSelectFacility(item)
+                    moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
+                    isSelected = true
+                          },
                 iconResourceId = R.drawable.place_maker_icon
             )
         }
@@ -301,6 +308,30 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                             }
                         )
                     }
+                }
+            }
+        }
+        if (isSelected){
+            ModalBottomSheet(
+                modifier = Modifier
+                    .height(230.dp)
+                    .innerShadow(),
+                containerColor = Color.White,
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                scrimColor = Color.Transparent,
+                onDismissRequest = {
+                    isSelected = false
+                }
+            ) {
+                if (selectFacility != null) {
+                    FacilityDetail(
+                        modifier = Modifier,
+                        facilityName = selectFacility.fcltyNm,
+                        eventName = selectFacility.mainItemNm,
+                        distance = selectFacility.distance,
+                        facilityAddress = selectFacility.fcltyAddr,
+                        facilityDetailAddress = selectFacility.fcltyDetailAddr
+                    )
                 }
             }
         }
