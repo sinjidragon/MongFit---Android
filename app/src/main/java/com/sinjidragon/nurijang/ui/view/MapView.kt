@@ -77,11 +77,6 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     var isSelected by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(currentBackStackEntry) {
-        if (currentBackStackEntry?.destination?.route == "map") {
-            print("하하")
-        }
-    }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val facilityList by mainViewModel.facilityList.observeAsState(emptyList())
@@ -103,7 +98,6 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val currentLocation = remember { mutableStateOf<LatLng?>(null) }
     val cameraPositionState = rememberCameraPositionState()
-
     fun moveCurrentLocation() {
         println(fusedLocationClient.lastLocation)
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
@@ -138,6 +132,14 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 moveCurrentLocation()
             }
             mainViewModel.setLaunched()
+        }
+    }
+    LaunchedEffect(currentBackStackEntry) {
+        if (currentBackStackEntry?.destination?.route == "map") {
+            if (selectFacility != null) {
+                moveCamera(selectFacility.fcltyCrdntLo,selectFacility.fcltyCrdntLa)
+                isSelected = true
+            }
         }
     }
     GoogleMap(
