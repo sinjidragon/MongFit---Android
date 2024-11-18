@@ -6,7 +6,7 @@ import com.sinjidragon.nurijang.remote.data.SearchRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun getFacility(lo: Double, la: Double, text: String): List<Facility>? {
+suspend fun eventSearch(lo: Double, la: Double, text: String): List<Facility>? {
     return withContext(Dispatchers.IO) {
         try {
             val service = Client.searchService
