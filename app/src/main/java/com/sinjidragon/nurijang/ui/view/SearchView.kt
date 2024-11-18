@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.remote.api.getFacility
 import com.sinjidragon.nurijang.remote.api.suggestions
 import com.sinjidragon.nurijang.remote.data.FacilityLite
 import com.sinjidragon.nurijang.ui.theme.dropShadow
@@ -166,7 +167,7 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                 .offset(y = 70.dp)
         ){
             LazyColumn (
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(18.dp)
             ){
                 items(eventList) { item ->
                     EventItem(
@@ -174,13 +175,28 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(18.dp))
             LazyColumn (
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(18.dp)
             ){
                 items(facilityList) { item ->
                     FacilityItem(
-                        text = item.fcltyNm
+                        text = item.fcltyNm,
+                        onClick = {
+                            coroutineScope.launch {
+                                val response = getFacility(
+                                    item.id,
+                                    cameraPosition.longitude,
+                                    cameraPosition.latitude,
+                                )
+                                if (response != null){
+                                    mainViewModel.setSelectFacility(response)
+                                    mainViewModel.setData(listOf(response))
+                                    navController.popBackStack()
+                                }
+
+                            }
+                        }
                     )
                 }
             }
@@ -195,7 +211,7 @@ fun EventItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp)
+            .padding(start = 20.dp)
             .height(43.dp)
             .clickable { onClick() }
     ) {
@@ -244,7 +260,7 @@ fun FacilityItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp)
+            .padding(start = 20.dp)
             .height(43.dp)
             .clickable { onClick() }
     ) {
