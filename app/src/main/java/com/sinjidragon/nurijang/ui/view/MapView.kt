@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.android.gms.location.LocationServices
@@ -73,10 +75,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
 @Composable
-fun MapView(navController: NavController,mainViewModel: MainViewModel) {
+fun MapView(navController: NavController,viewModel: MainViewModel = viewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val isLaunched = mainViewModel.isLaunched.value ?:false
-    val selectFacility = mainViewModel.selectFacility.value
     var isSelected by remember {
         mutableStateOf(false)
     }
@@ -85,7 +86,10 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+<<<<<<< HEAD
     val facilityList = remember { mutableStateListOf<Facility>() }
+=======
+>>>>>>> c49c928 (feat: test)
     var showBottomSheet by remember {mutableStateOf(false)}
     var hasPermission by remember {
         mutableStateOf(
@@ -133,24 +137,23 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
         currentLocation.value?.let { location ->
             val response = getFacilities(location.longitude, location.latitude)
             if (response != null) {
-                mainViewModel.setData(response)
+                viewModel.setData(response)
             }
         }
     }
     LaunchedEffect(Unit) {
-        Log.d("adfs","$isLaunched")
-        if (!isLaunched) {
+        if (!uiState.isLaunched) {
             launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             if (hasPermission) {
                 moveCurrentLocation()
             }
-            mainViewModel.setLaunched()
+            viewModel.setLaunched()
         }
     }
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
-            if (selectFacility != null) {
-                moveCamera(selectFacility.fcltyCrdntLo,selectFacility.fcltyCrdntLa)
+            if (true) {
+                moveCamera(uiState.selectFacility.fcltyCrdntLo,uiState.selectFacility.fcltyCrdntLa)
                 isSelected = true
             }
         }
@@ -169,6 +172,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 iconResourceId = R.drawable.now_location_icon
             )
         }
+<<<<<<< HEAD
         Clustering(
             items = facilityList,
             onClusterItemClick = { item ->
@@ -178,6 +182,26 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 true
             }
         )
+=======
+        for (item in uiState.facilityList){
+            val text = if (cameraPositionState.position.zoom >= 16f) {
+                item.fcltyNm
+            } else {
+                ""
+            }
+            PlaceMaker(
+                context = context,
+                position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
+                text = text,
+                onClick = {
+                    viewModel.setSelectFacility(item)
+                    moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
+                    isSelected = true
+                          },
+                iconResourceId = R.drawable.place_maker_icon
+            )
+        }
+>>>>>>> c49c928 (feat: test)
     }
     Box(
         modifier = Modifier
@@ -194,7 +218,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .clickable {
-                        mainViewModel.setCameraPosition(
+                        viewModel.setCameraPosition(
                             cameraPositionState.position.target.latitude,
                             cameraPositionState.position.target.longitude
                         )
@@ -264,7 +288,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                             fcltyCrdntLo = cameraPositionState.position.target.longitude
                         )
                         if (response != null) {
-                            mainViewModel.setData(response)
+                            viewModel.setData(response)
                         }
                     }
                 },
@@ -301,7 +325,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 LazyColumn (
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ){
-                    items(facilityList){facility ->
+                    items(uiState.facilityList){facility ->
                         FacilityDetail(
                             modifier = Modifier,
                             facilityName = facility.fcltyNm,
@@ -332,15 +356,23 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                     isSelected = false
                 }
             ) {
-                if (selectFacility != null) {
+                if (true) {
                     FacilityDetail(
                         modifier = Modifier,
+<<<<<<< HEAD
                         facilityName = selectFacility.fcltyNm,
                         eventName = selectFacility.mainItemNm,
                         distance = selectFacility.distance,
                         facilityAddress = selectFacility.fcltyAddr,
                         facilityDetailAddress = selectFacility.fcltyDetailAddr,
                         isButton = false
+=======
+                        facilityName = uiState.selectFacility.fcltyNm,
+                        eventName = uiState.selectFacility.mainItemNm,
+                        distance = uiState.selectFacility.distance,
+                        facilityAddress = uiState.selectFacility.fcltyAddr,
+                        facilityDetailAddress = uiState.selectFacility.fcltyDetailAddr
+>>>>>>> c49c928 (feat: test)
                     )
                 }
             }
