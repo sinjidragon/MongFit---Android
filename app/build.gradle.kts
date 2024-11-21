@@ -84,4 +84,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("com.google.maps.android:maps-compose-utils:6.2.1")
+    implementation("com.google.maps.android:maps-compose-widgets:6.2.1")
 }
