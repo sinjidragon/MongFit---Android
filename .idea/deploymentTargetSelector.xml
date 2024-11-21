@@ -2,7 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="Nurijang.app">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-11-07T14:28:41.810876Z">
           <Target type="DEFAULT_BOOT">
