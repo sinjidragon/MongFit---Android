@@ -142,6 +142,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
             }
         }
     }
+    Log.d("도영이바보", "MapView")
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
