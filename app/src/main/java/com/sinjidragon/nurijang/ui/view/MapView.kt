@@ -28,6 +28,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.android.gms.location.LocationServices
@@ -70,16 +72,14 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapView(navController: NavController,mainViewModel: MainViewModel) {
+fun MapView(navController: NavController,viewModel: MainViewModel = viewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val isLaunched = mainViewModel.isLaunched.value ?:false
-    val selectFacility = mainViewModel.selectFacility.value
     var isSelected by remember {
         mutableStateOf(false)
     }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val facilityList by mainViewModel.facilityList.observeAsState(emptyList())
     var showBottomSheet by remember {mutableStateOf(false)}
     var hasPermission by remember {
         mutableStateOf(
@@ -120,24 +120,23 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
         currentLocation.value?.let { location ->
             val response = getFacilities(location.longitude, location.latitude)
             if (response != null) {
-                mainViewModel.setData(response)
+                viewModel.setData(response)
             }
         }
     }
     LaunchedEffect(Unit) {
-        Log.d("adfs","$isLaunched")
-        if (!isLaunched) {
+        if (!uiState.isLaunched) {
             launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             if (hasPermission) {
                 moveCurrentLocation()
             }
-            mainViewModel.setLaunched()
+            viewModel.setLaunched()
         }
     }
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
-            if (selectFacility != null) {
-                moveCamera(selectFacility.fcltyCrdntLo,selectFacility.fcltyCrdntLa)
+            if (true) {
+                moveCamera(uiState.selectFacility.fcltyCrdntLo,uiState.selectFacility.fcltyCrdntLa)
                 isSelected = true
             }
         }
@@ -155,7 +154,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 iconResourceId = R.drawable.now_location_icon
             )
         }
-        for (item in facilityList){
+        for (item in uiState.facilityList){
             val text = if (cameraPositionState.position.zoom >= 16f) {
                 item.fcltyNm
             } else {
@@ -166,7 +165,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
                 text = text,
                 onClick = {
-                    mainViewModel.setSelectFacility(item)
+                    viewModel.setSelectFacility(item)
                     moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
                     isSelected = true
                           },
@@ -189,7 +188,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .clickable {
-                        mainViewModel.setCameraPosition(
+                        viewModel.setCameraPosition(
                             cameraPositionState.position.target.latitude,
                             cameraPositionState.position.target.longitude
                         )
@@ -259,7 +258,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                             fcltyCrdntLo = cameraPositionState.position.target.longitude
                         )
                         if (response != null) {
-                            mainViewModel.setData(response)
+                            viewModel.setData(response)
                         }
                     }
                 },
@@ -296,7 +295,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 LazyColumn (
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ){
-                    items(facilityList){facility ->
+                    items(uiState.facilityList){facility ->
                         FacilityDetail(
                             modifier = Modifier,
                             facilityName = facility.fcltyNm,
@@ -325,14 +324,14 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                     isSelected = false
                 }
             ) {
-                if (selectFacility != null) {
+                if (true) {
                     FacilityDetail(
                         modifier = Modifier,
-                        facilityName = selectFacility.fcltyNm,
-                        eventName = selectFacility.mainItemNm,
-                        distance = selectFacility.distance,
-                        facilityAddress = selectFacility.fcltyAddr,
-                        facilityDetailAddress = selectFacility.fcltyDetailAddr
+                        facilityName = uiState.selectFacility.fcltyNm,
+                        eventName = uiState.selectFacility.mainItemNm,
+                        distance = uiState.selectFacility.distance,
+                        facilityAddress = uiState.selectFacility.fcltyAddr,
+                        facilityDetailAddress = uiState.selectFacility.fcltyDetailAddr
                     )
                 }
             }

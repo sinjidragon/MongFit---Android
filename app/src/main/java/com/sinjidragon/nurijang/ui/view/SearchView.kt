@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
 import com.sinjidragon.nurijang.R
@@ -52,10 +54,11 @@ import com.sinjidragon.nurijang.ui.theme.pretendard
 import kotlinx.coroutines.launch
 
 @Composable
-fun SearchView(navController: NavController,mainViewModel: MainViewModel){
+fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel()){
     var searchText by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
-    val cameraPosition = mainViewModel.cameraPosition.value ?: LatLng(37.532600,127.024612)
+    val uiState by viewModel.uiState.collectAsState()
+    viewModel.setCameraPosition(37.532600,127.024612)
     var eventList by remember {
         mutableStateOf<List<String>>(emptyList())
     }
@@ -108,8 +111,8 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                         searchText = it
                         coroutineScope.launch {
                             val response = suggestions(
-                                cameraPosition.longitude,
-                                cameraPosition.latitude,
+                                uiState.cameraPosition.longitude,
+                                uiState.cameraPosition.latitude,
                                 text = searchText
                             )
                             if (response != null){
@@ -186,12 +189,12 @@ fun SearchView(navController: NavController,mainViewModel: MainViewModel){
                             coroutineScope.launch {
                                 val response = getFacility(
                                     item.id,
-                                    cameraPosition.longitude,
-                                    cameraPosition.latitude,
+                                    uiState.cameraPosition.longitude,
+                                    uiState.cameraPosition.latitude,
                                 )
                                 if (response != null){
-                                    mainViewModel.setSelectFacility(response)
-                                    mainViewModel.setData(listOf(response))
+                                    viewModel.setSelectFacility(response)
+                                    viewModel.setData(listOf(response))
                                     navController.popBackStack()
                                 }
 
