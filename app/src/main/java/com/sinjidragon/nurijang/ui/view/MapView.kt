@@ -26,10 +26,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,13 +54,15 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.getFacilities
+import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
-import com.sinjidragon.nurijang.ui.component.PlaceMaker
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
@@ -68,7 +71,7 @@ import com.sinjidragon.nurijang.ui.theme.pretendard
 import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
 @Composable
 fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -77,9 +80,12 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     var isSelected by remember {
         mutableStateOf(false)
     }
+    val selectFacilityState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val facilityList by mainViewModel.facilityList.observeAsState(emptyList())
+    val facilityList = remember { mutableStateListOf<Facility>() }
     var showBottomSheet by remember {mutableStateOf(false)}
     var hasPermission by remember {
         mutableStateOf(
@@ -88,6 +94,13 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
         )
+    }
+    LaunchedEffect(mainViewModel.facilityList) {
+        mainViewModel.facilityList.observeForever { newList->
+            facilityList.clear()
+            facilityList.addAll(newList)
+        }
+        println(facilityList)
     }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -156,24 +169,15 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 iconResourceId = R.drawable.now_location_icon
             )
         }
-        for (item in facilityList){
-            val text = if (cameraPositionState.position.zoom >= 16f) {
-                item.fcltyNm
-            } else {
-                ""
+        Clustering(
+            items = facilityList,
+            onClusterItemClick = { item ->
+                mainViewModel.setSelectFacility(item)
+                moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
+                isSelected = true
+                true
             }
-            PlaceMaker(
-                context = context,
-                position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
-                text = text,
-                onClick = {
-                    mainViewModel.setSelectFacility(item)
-                    moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
-                    isSelected = true
-                          },
-                iconResourceId = R.drawable.place_maker_icon
-            )
-        }
+        )
     }
     Box(
         modifier = Modifier
@@ -316,9 +320,11 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
         }
         if (isSelected){
             ModalBottomSheet(
+                sheetState = selectFacilityState,
                 modifier = Modifier
                     .height(230.dp)
-                    .innerShadow(),
+                    .innerShadow()
+                    .align(Alignment.BottomCenter),
                 containerColor = Color.White,
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 scrimColor = Color.Transparent,
@@ -333,7 +339,8 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                         eventName = selectFacility.mainItemNm,
                         distance = selectFacility.distance,
                         facilityAddress = selectFacility.fcltyAddr,
-                        facilityDetailAddress = selectFacility.fcltyDetailAddr
+                        facilityDetailAddress = selectFacility.fcltyDetailAddr,
+                        isButton = false
                     )
                 }
             }
