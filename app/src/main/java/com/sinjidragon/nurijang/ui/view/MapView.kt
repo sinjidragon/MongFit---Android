@@ -165,7 +165,15 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                 iconResourceId = R.drawable.now_location_icon
             )
         }
-        Clustering(items = facilityList)
+        Clustering(
+            items = facilityList,
+            onClusterItemClick = { item ->
+                mainViewModel.setSelectFacility(item)
+                moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
+                isSelected = true
+                true
+            }
+        )
     }
     Box(
         modifier = Modifier
@@ -310,7 +318,8 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
             ModalBottomSheet(
                 modifier = Modifier
                     .height(230.dp)
-                    .innerShadow(),
+                    .innerShadow()
+                    .align(Alignment.BottomCenter),
                 containerColor = Color.White,
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 scrimColor = Color.Transparent,
