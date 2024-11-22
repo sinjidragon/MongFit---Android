@@ -43,6 +43,7 @@ fun FacilityDetail(
     facilityAddress: String,
     facilityDetailAddress: String?,
     onClick: () -> Unit = {},
+    isButton : Boolean = true
 ){
     fun formatTellNumber(number: String): String {
         if (number.length !in 10..11) return number
@@ -161,6 +162,7 @@ fun FacilityDetail(
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(24.dp))
+            if (isButton){
             Row(
                 modifier = Modifier
                     .size(115.dp, 30.dp)
@@ -182,6 +184,7 @@ fun FacilityDetail(
                     contentDescription = ""
                 )
             }
+                }
         }
     }
 @Composable

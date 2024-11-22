@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,6 +80,9 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
     var isSelected by remember {
         mutableStateOf(false)
     }
+    val selectFacilityState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val facilityList = remember { mutableStateListOf<Facility>() }
@@ -316,6 +320,7 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
         }
         if (isSelected){
             ModalBottomSheet(
+                sheetState = selectFacilityState,
                 modifier = Modifier
                     .height(230.dp)
                     .innerShadow()
@@ -334,7 +339,8 @@ fun MapView(navController: NavController,mainViewModel: MainViewModel) {
                         eventName = selectFacility.mainItemNm,
                         distance = selectFacility.distance,
                         facilityAddress = selectFacility.fcltyAddr,
-                        facilityDetailAddress = selectFacility.fcltyDetailAddr
+                        facilityDetailAddress = selectFacility.fcltyDetailAddr,
+                        isButton = false
                     )
                 }
             }
