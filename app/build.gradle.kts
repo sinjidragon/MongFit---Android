@@ -25,6 +25,7 @@ android {
             useSupportLibrary = true
         }
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
+        manifestPlaceholders["GOOGLE_API_KEY"] = {localProperties["GOOGLE_API_KEY"]}
     }
 
     buildTypes {
@@ -58,7 +59,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -86,5 +86,4 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("com.google.maps.android:maps-compose-utils:6.2.1")
     implementation("com.google.maps.android:maps-compose-widgets:6.2.1")
-    implementation("com.google.maps.android:android-maps-utils:2.4.0")
 }
