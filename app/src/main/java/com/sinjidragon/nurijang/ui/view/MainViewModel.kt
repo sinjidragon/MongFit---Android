@@ -23,7 +23,9 @@ data class MainData(
         mainItemNm = "",
         fcltyCrdntLo = 0.0,
         fcltyCrdntLa = 0.0
-    )
+    ),
+    val showBottomSheet: Boolean = false,
+    val hasPermission: Boolean = false
 )
 
 
@@ -35,6 +37,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun setData(data: List<Facility>) {
         _uiState.update { it.copy(facilityList = data) }
+    }
+
+    fun setPermission(data: Boolean) {
+        _uiState.update { it.copy(hasPermission = data) }
+    }
+
+    fun setShowBottomSheet(show: Boolean) {
+        _uiState.update { it.copy(showBottomSheet = show) }
     }
 
     fun setLaunched() {

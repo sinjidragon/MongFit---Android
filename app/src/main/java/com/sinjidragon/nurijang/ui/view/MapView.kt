@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,7 +60,6 @@ import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.getFacilities
-import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
@@ -75,7 +73,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
 @Composable
-fun MapView(navController: NavController,viewModel: MainViewModel = viewModel()) {
+fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     var isSelected by remember {
@@ -86,30 +84,19 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
     )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-<<<<<<< HEAD
-    val facilityList = remember { mutableStateListOf<Facility>() }
-=======
->>>>>>> c49c928 (feat: test)
-    var showBottomSheet by remember {mutableStateOf(false)}
-    var hasPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
-    LaunchedEffect(mainViewModel.facilityList) {
-        mainViewModel.facilityList.observeForever { newList->
-            facilityList.clear()
-            facilityList.addAll(newList)
-        }
-        println(facilityList)
+    viewModel.setPermission(
+        ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED
+    )
+    LaunchedEffect(Unit) {
+        println(uiState.facilityList)
     }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
-            hasPermission = isGranted
+            viewModel.setPermission(isGranted)
         }
     )
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -128,9 +115,10 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
             }
         }
     }
-    fun moveCamera(lo:Double,la:Double){
+
+    fun moveCamera(lo: Double, la: Double) {
         cameraPositionState.move(
-            CameraUpdateFactory.newLatLng(LatLng(la,lo))
+            CameraUpdateFactory.newLatLng(LatLng(la, lo))
         )
     }
     LaunchedEffect(currentLocation.value) {
@@ -144,7 +132,7 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
     LaunchedEffect(Unit) {
         if (!uiState.isLaunched) {
             launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-            if (hasPermission) {
+            if (uiState.hasPermission) {
                 moveCurrentLocation()
             }
             viewModel.setLaunched()
@@ -153,12 +141,11 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
             if (true) {
-                moveCamera(uiState.selectFacility.fcltyCrdntLo,uiState.selectFacility.fcltyCrdntLa)
+                moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
                 isSelected = true
             }
         }
     }
-    Log.d("도영이바보", "MapView")
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -172,36 +159,15 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                 iconResourceId = R.drawable.now_location_icon
             )
         }
-<<<<<<< HEAD
         Clustering(
-            items = facilityList,
+            items = uiState.facilityList,
             onClusterItemClick = { item ->
-                mainViewModel.setSelectFacility(item)
-                moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
+                viewModel.setSelectFacility(item)
+                moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
                 isSelected = true
                 true
             }
         )
-=======
-        for (item in uiState.facilityList){
-            val text = if (cameraPositionState.position.zoom >= 16f) {
-                item.fcltyNm
-            } else {
-                ""
-            }
-            PlaceMaker(
-                context = context,
-                position = LatLng(item.fcltyCrdntLa, item.fcltyCrdntLo),
-                text = text,
-                onClick = {
-                    viewModel.setSelectFacility(item)
-                    moveCamera(item.fcltyCrdntLo,item.fcltyCrdntLa)
-                    isSelected = true
-                          },
-                iconResourceId = R.drawable.place_maker_icon
-            )
-        }
->>>>>>> c49c928 (feat: test)
     }
     Box(
         modifier = Modifier
@@ -213,7 +179,7 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                 .padding(horizontal = 16.dp)
                 .height(44.dp)
                 .align(Alignment.TopCenter),
-        ){
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -230,7 +196,7 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                     .fillMaxWidth()
                     .background(Color.White),
                 horizontalArrangement = Arrangement.Start,
-            ){
+            ) {
                 Spacer(modifier = Modifier.width(11.dp))
                 Image(
                     modifier = Modifier
@@ -303,29 +269,30 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                 fontSize = 14.sp
             )
         }
-        if (hasPermission) {
+        if (uiState.hasPermission) {
             MoveCurrentLocationButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-24).dp, y = (-81).dp)
-                ,
+                    .offset(x = (-24).dp, y = (-81).dp),
                 onClick = { moveCurrentLocation() }
             )
         }
-        if (showBottomSheet){
+        if (uiState.showBottomSheet) {
             ModalBottomSheet(
                 modifier = Modifier
                     .height(650.dp)
                     .innerShadow(),
-                onDismissRequest = { showBottomSheet = false },
+                onDismissRequest = {
+                    viewModel.setShowBottomSheet(false)
+                },
                 containerColor = Color.White,
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 scrimColor = Color.Transparent
             ) {
-                LazyColumn (
+                LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
-                ){
-                    items(uiState.facilityList){facility ->
+                ) {
+                    items(uiState.facilityList) { facility ->
                         FacilityDetail(
                             modifier = Modifier,
                             facilityName = facility.fcltyNm,
@@ -335,14 +302,14 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                             tellNumber = facility.rprsntvTelNo,
                             distance = facility.distance,
                             onClick = {
-                                moveCamera(facility.fcltyCrdntLo,facility.fcltyCrdntLa)
+                                moveCamera(facility.fcltyCrdntLo, facility.fcltyCrdntLa)
                             }
                         )
                     }
                 }
             }
         }
-        if (isSelected){
+        if (isSelected) {
             ModalBottomSheet(
                 sheetState = selectFacilityState,
                 modifier = Modifier
@@ -359,20 +326,12 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                 if (true) {
                     FacilityDetail(
                         modifier = Modifier,
-<<<<<<< HEAD
-                        facilityName = selectFacility.fcltyNm,
-                        eventName = selectFacility.mainItemNm,
-                        distance = selectFacility.distance,
-                        facilityAddress = selectFacility.fcltyAddr,
-                        facilityDetailAddress = selectFacility.fcltyDetailAddr,
-                        isButton = false
-=======
                         facilityName = uiState.selectFacility.fcltyNm,
                         eventName = uiState.selectFacility.mainItemNm,
                         distance = uiState.selectFacility.distance,
                         facilityAddress = uiState.selectFacility.fcltyAddr,
-                        facilityDetailAddress = uiState.selectFacility.fcltyDetailAddr
->>>>>>> c49c928 (feat: test)
+                        facilityDetailAddress = uiState.selectFacility.fcltyDetailAddr,
+                        isButton = false
                     )
                 }
             }
@@ -387,12 +346,14 @@ fun MapView(navController: NavController,viewModel: MainViewModel = viewModel())
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(Color.White)
                 .innerShadow()
-        ){
+        ) {
             Text(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .offset(y = 18.dp)
-                    .clickable { showBottomSheet = true },
+                    .clickable {
+                        viewModel.setShowBottomSheet(true)
+                    },
                 text = "목록 표시"
             )
         }
