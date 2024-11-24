@@ -138,10 +138,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
     }
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
-            if (true) {
-                moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
-                isSelected = true
-            }
+            moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
+            isSelected = true
+
         }
     }
     GoogleMap(
@@ -168,8 +167,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                 true
             },
             clusterItemContent = { item ->
-                Box(
-                ) {
+                Box {
                     val text = if (cameraPositionState.position.zoom >= 16f) {
                         item.fcltyNm
                     } else {
@@ -352,17 +350,15 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                     isSelected = false
                 }
             ) {
-                if (true) {
-                    FacilityDetail(
-                        modifier = Modifier,
-                        facilityName = uiState.selectFacility.fcltyNm,
-                        eventName = uiState.selectFacility.mainItemNm,
-                        distance = uiState.selectFacility.distance,
-                        facilityAddress = uiState.selectFacility.fcltyAddr,
-                        facilityDetailAddress = uiState.selectFacility.fcltyDetailAddr,
-                        isButton = false
-                    )
-                }
+                FacilityDetail(
+                    modifier = Modifier,
+                    facilityName = uiState.selectFacility.fcltyNm,
+                    eventName = uiState.selectFacility.mainItemNm,
+                    distance = uiState.selectFacility.distance,
+                    facilityAddress = uiState.selectFacility.fcltyAddr,
+                    facilityDetailAddress = uiState.selectFacility.fcltyDetailAddr,
+                    isButton = false
+                )
             }
         }
     }
