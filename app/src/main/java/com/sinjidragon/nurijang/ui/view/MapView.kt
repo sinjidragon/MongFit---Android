@@ -1,7 +1,6 @@
 package com.sinjidragon.nurijang.ui.view
 
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -68,6 +67,7 @@ import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
+import com.sinjidragon.nurijang.ui.theme.subColor
 import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
@@ -116,10 +116,8 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
         }
     }
 
-    fun moveCamera(lo: Double, la: Double) {
-        cameraPositionState.move(
-            CameraUpdateFactory.newLatLng(LatLng(la, lo))
-        )
+    suspend fun moveCamera(lo: Double, la: Double) {
+        cameraPositionState.animate(CameraUpdateFactory.newLatLng(LatLng(la,lo)),1000)
     }
     LaunchedEffect(currentLocation.value) {
         currentLocation.value?.let { location ->
@@ -163,9 +161,38 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
             items = uiState.facilityList,
             onClusterItemClick = { item ->
                 viewModel.setSelectFacility(item)
-                moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
+                coroutineScope.launch {
+                    moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
+                }
                 isSelected = true
                 true
+            },
+            clusterItemContent = { item ->
+                Box(
+                ) {
+                    val text = if (cameraPositionState.position.zoom >= 16f) {
+                        item.fcltyNm
+                    } else {
+                        ""
+                    }
+                    Image(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(16.dp, 22.dp),
+                        painter = painterResource(R.drawable.place_maker_icon),
+                        contentDescription = ""
+                    )
+                    Text(
+                        text = text,
+                        fontSize = 14.sp,
+                        color = subColor,
+                        fontFamily = pretendard,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 40.dp)
+                    )
+                }
             }
         )
     }
@@ -302,7 +329,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                             tellNumber = facility.rprsntvTelNo,
                             distance = facility.distance,
                             onClick = {
-                                moveCamera(facility.fcltyCrdntLo, facility.fcltyCrdntLa)
+                                coroutineScope.launch {
+                                    moveCamera(facility.fcltyCrdntLo, facility.fcltyCrdntLa)
+                                }
                             }
                         )
                     }
