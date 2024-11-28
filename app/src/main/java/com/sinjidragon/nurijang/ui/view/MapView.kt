@@ -74,11 +74,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
 @Composable
 fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState. collectAsState()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    var isSelected by remember {
-        mutableStateOf(false)
-    }
     val selectFacilityState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -121,10 +118,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
     }
     LaunchedEffect(currentLocation.value) {
         currentLocation.value?.let { location ->
-            val response = getFacilities(location.longitude, location.latitude)
-            if (response != null) {
-                viewModel.setData(response)
-            }
+            viewModel.getFacilities(location.longitude,location.latitude)
         }
     }
     LaunchedEffect(Unit) {
@@ -139,8 +133,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
             moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
-            isSelected = true
-
+            viewModel.setIsSelected(true)
         }
     }
     GoogleMap(
@@ -163,7 +156,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                 coroutineScope.launch {
                     moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
                 }
-                isSelected = true
+                viewModel.setIsSelected(true)
                 true
             },
             clusterItemContent = { item ->
@@ -274,13 +267,10 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                 .background(Color.White)
                 .clickable {
                     coroutineScope.launch {
-                        val response = getFacilities(
-                            fcltyCrdntLa = cameraPositionState.position.target.latitude,
-                            fcltyCrdntLo = cameraPositionState.position.target.longitude
+                        viewModel.getFacilities(
+                            cameraPositionState.position.target.longitude,
+                            cameraPositionState.position.target.latitude
                         )
-                        if (response != null) {
-                            viewModel.setData(response)
-                        }
                     }
                 },
         ) {
@@ -336,7 +326,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                 }
             }
         }
-        if (isSelected) {
+        if (uiState.isSelected) {
             ModalBottomSheet(
                 sheetState = selectFacilityState,
                 modifier = Modifier
@@ -347,7 +337,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 scrimColor = Color.Transparent,
                 onDismissRequest = {
-                    isSelected = false
+                    viewModel.setIsSelected(false)
                 }
             ) {
                 FacilityDetail(
