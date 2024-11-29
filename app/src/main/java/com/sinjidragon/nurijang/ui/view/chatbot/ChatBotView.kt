@@ -2,9 +2,12 @@ package com.sinjidragon.nurijang.ui.view.chatbot
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
@@ -39,6 +45,7 @@ import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.ui.theme.gray
 import com.sinjidragon.nurijang.ui.theme.gray2
+import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
 
 @Composable
@@ -96,9 +103,23 @@ fun ChatBotView(
         }
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
         LazyColumn (
+            verticalArrangement = Arrangement.spacedBy(22.dp),
             modifier = Modifier.fillMaxWidth().weight(1f)
         ){
+            items(uiState.messages){ item->
+                when (item) {
+                    is MessageItem.MyMessageItem -> {
+                        MyMessageItem(item)
+                    }
+                    is MessageItem.BotMessageItem -> {
+                        BotMessageItem(item)
+                    }
+                    is MessageItem.RecommandMessageItem -> {
+                        RecommandMessageItem(item,viewModel)
+                    }
 
+                }
+            }
         }
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
         Box(
@@ -146,7 +167,8 @@ fun ChatBotView(
                 Image(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(end = 22.dp),
+                        .padding(end = 22.dp)
+                        .clickable { viewModel.sendMessage(uiState.message) },
                     painter = painterResource(R.drawable.send_icon),
                     contentDescription = ""
                 )
@@ -154,10 +176,114 @@ fun ChatBotView(
         }
     }
 }
+
+@Composable
+fun MyMessageItem(item : MessageItem.MyMessageItem){
+    Box(
+        Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(end = 20.dp)
+                .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 12.dp))
+                .background(mainColor)
+
+        ){
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
+                text = item.myMessage,
+                fontFamily = pretendard,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = Color.White
+            )
+        }
+    }
+}
+
+@Composable
+fun BotMessageItem(item : MessageItem.BotMessageItem){
+    Box(
+        Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.CenterStart
+    ){
+        Row(
+            modifier = Modifier
+                .padding(start = 20.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Bottom)
+                    .size(35.dp)
+                    .clip(CircleShape)
+                    .background(mainColor)
+            ){
+                Image(
+                    modifier = Modifier.align(Alignment.Center),
+                    painter = painterResource(R.drawable.bot_icon),
+                    contentDescription = ""
+                )
+            }
+            Spacer(Modifier.width(10.dp))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomEnd = 12.dp))
+                    .background(gray)
+
+            ){
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
+                    text = item.botMessage,
+                    fontFamily = pretendard,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RecommandMessageItem(item: MessageItem.RecommandMessageItem, viewModel: ChatBotViewModel) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            for (recommand in item.recommandMessage) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(width = 1.dp, color = mainColor, shape = RoundedCornerShape(12.dp))
+                        .clickable { viewModel.sendMessage(recommand) }
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 7.dp),
+                        text = recommand
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
 @Preview
 @Composable
 fun CBPV(){
     ChatBotView(navController = NavController(LocalContext.current))
+//    RecommandMessageItem(MessageItem.RecommandMessageItem(listOf("jadlkf","dasf","afds")))
 }
 
 

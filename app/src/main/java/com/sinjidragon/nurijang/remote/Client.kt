@@ -6,6 +6,7 @@ import com.sinjidragon.nurijang.remote.service.FacilityService
 import com.sinjidragon.nurijang.remote.service.SearchService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object Client {
     private var retrofit: Retrofit? = null
@@ -15,6 +16,7 @@ object Client {
             val url = BuildConfig.BASE_URL
             retrofit = Retrofit.Builder()
                 .baseUrl(url)
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         }

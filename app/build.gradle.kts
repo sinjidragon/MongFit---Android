@@ -86,4 +86,5 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("com.google.maps.android:maps-compose-utils:6.2.1")
     implementation("com.google.maps.android:maps-compose-widgets:6.2.1")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 }
