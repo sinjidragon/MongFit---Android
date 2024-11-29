@@ -236,7 +236,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
             Box(
                 modifier = Modifier
                     .clickable {
-                        TODO("일단 보류기능")
+                        navController.navigate(NavGroup.CHAT_BOT)
                     }
                     .clip(RoundedCornerShape(8.dp))
                     .dropShadow()

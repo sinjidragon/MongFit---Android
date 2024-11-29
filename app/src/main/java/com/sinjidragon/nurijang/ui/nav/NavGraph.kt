@@ -9,6 +9,7 @@ import com.sinjidragon.nurijang.ui.view.MainViewModel
 import com.sinjidragon.nurijang.ui.view.MapView
 import com.sinjidragon.nurijang.ui.view.SearchView
 import com.sinjidragon.nurijang.ui.view.SplashView
+import com.sinjidragon.nurijang.ui.view.chatbot.ChatBotView
 
 @Composable
 fun NavGraph(navController: NavHostController,mainViewModel: MainViewModel = hiltViewModel()) {
@@ -23,6 +24,9 @@ fun NavGraph(navController: NavHostController,mainViewModel: MainViewModel = hil
         }
         composable(route = NavGroup.SEARCH) {
             SearchView(navController = navController,mainViewModel)
+        }
+        composable(route = NavGroup.CHAT_BOT) {
+            ChatBotView(navController = navController)
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.sinjidragon.nurijang.remote
 
 import com.sinjidragon.nurijang.BuildConfig
+import com.sinjidragon.nurijang.remote.service.ChatBotService
 import com.sinjidragon.nurijang.remote.service.FacilityService
 import com.sinjidragon.nurijang.remote.service.SearchService
 import retrofit2.Retrofit
@@ -25,5 +26,8 @@ object Client {
     }
     val searchService: SearchService by lazy {
         getClient().create(SearchService::class.java)
+    }
+    val chatBotService: ChatBotService by lazy {
+        getClient().create(ChatBotService::class.java)
     }
 }
