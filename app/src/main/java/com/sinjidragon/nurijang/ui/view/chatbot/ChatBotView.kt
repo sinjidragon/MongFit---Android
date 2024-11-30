@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +19,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -54,10 +54,14 @@ fun ChatBotView(
     viewModel: ChatBotViewModel = viewModel()
 ){
     val uiState by viewModel.uiState. collectAsState()
-
-
+    val listState = rememberLazyListState()
     LaunchedEffect(Unit) {
         viewModel.startChatBot()
+    }
+    LaunchedEffect(uiState.messages) {
+        if (uiState.message.isNotEmpty()) {
+            listState.scrollToItem(uiState.messages.size - 1)
+        }
     }
     Column(
         modifier = Modifier
@@ -103,6 +107,7 @@ fun ChatBotView(
         }
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
         LazyColumn (
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(22.dp),
             modifier = Modifier.fillMaxWidth().weight(1f)
         ){
@@ -186,7 +191,7 @@ fun MyMessageItem(item : MessageItem.MyMessageItem){
     ) {
         Box(
             modifier = Modifier
-                .padding(end = 20.dp)
+                .padding(horizontal = 20.dp)
                 .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 12.dp))
                 .background(mainColor)
 
@@ -212,7 +217,7 @@ fun BotMessageItem(item : MessageItem.BotMessageItem){
     ){
         Row(
             modifier = Modifier
-                .padding(start = 20.dp)
+                .padding(horizontal = 20.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -250,7 +255,9 @@ fun BotMessageItem(item : MessageItem.BotMessageItem){
 @Composable
 fun RecommandMessageItem(item: MessageItem.RecommandMessageItem, viewModel: ChatBotViewModel) {
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
         contentAlignment = Alignment.CenterEnd
     ) {
         Column(
@@ -262,7 +269,7 @@ fun RecommandMessageItem(item: MessageItem.RecommandMessageItem, viewModel: Chat
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
                         .border(width = 1.dp, color = mainColor, shape = RoundedCornerShape(12.dp))
-                        .clickable { viewModel.sendMessage(recommand) }
+                        .clickable { viewModel.sendMessage(recommand,true) }
                 ) {
                     Text(
                         modifier = Modifier

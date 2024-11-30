@@ -1,6 +1,5 @@
 package com.sinjidragon.nurijang.ui.view.chatbot
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -8,6 +7,7 @@ import com.google.gson.JsonSyntaxException
 import com.sinjidragon.nurijang.remote.Client
 import com.sinjidragon.nurijang.remote.data.BotMessage
 import com.sinjidragon.nurijang.remote.data.SendMessageRequest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -70,22 +70,46 @@ class ChatBotViewModel: ViewModel() {
             }
         }
     }
-    fun sendMessage(message: String) {
-        addMessage(MessageItem.MyMessageItem(message))
-        addMessage(MessageItem.BotMessageItem("응답을 생성중입니다..."))
+    fun sendMessage(message: String,isRecommand: Boolean = false) {
+        if (isRecommand){
+            changeLastMessage(MessageItem.MyMessageItem(message))
+        }
+        else {
+            addMessage(MessageItem.MyMessageItem(message))
+        }
+        var isLaunch = true
+        viewModelScope.launch {
+            delay(500)
+            addMessage(MessageItem.BotMessageItem("응답을 생성중입니다.  "))
+            while (isLaunch){
+                delay(1000)
+                if (isLaunch) {
+                    changeLastMessage(MessageItem.BotMessageItem("응답을 생성중입니다.. "))
+                }
+                delay(1000)
+                if (isLaunch) {
+                    changeLastMessage(MessageItem.BotMessageItem("응답을 생성중입니다..."))
+                }
+                delay(1000)
+                if (isLaunch) {
+                    changeLastMessage(MessageItem.BotMessageItem("응답을 생성중입니다.  "))
+                }
+            }
+        }
         viewModelScope.launch {
             try{
                 val chatBotService = Client.chatBotService
                 val threadId = uiState.value.threadId
                 val request = SendMessageRequest(threadId,message)
                 val response = chatBotService.sendMessage(request)
+                isLaunch = false
+                delay(1000)
                 println(response)
                 try {
                     val madeMessage = response.replace("```json", "").replace("```", "").trimIndent()
                     println(madeMessage)
                     val gson = Gson()
                     val jsonMessage = gson.fromJson(madeMessage,BotMessage::class.java)
-                    Log.d("dfa","${jsonMessage}")
                     val botMessage = jsonMessage.answer.joinToString(separator = "\n")
                     changeLastMessage(MessageItem.BotMessageItem(botMessage))
                     addMessage(MessageItem.RecommandMessageItem(jsonMessage.recommand))
@@ -93,6 +117,7 @@ class ChatBotViewModel: ViewModel() {
                     changeLastMessage(MessageItem.BotMessageItem(response))
                 }
             } catch (e: HttpException) {
+                isLaunch = false
                 _uiEffect.emit(ChatBotSideEffect.Failed)
             }
         }
