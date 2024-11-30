@@ -20,7 +20,8 @@ import retrofit2.HttpException
 data class ChatBotState(
     val messages : List<MessageItem> = emptyList(),
     val message : String = "",
-    val threadId : String = ""
+    val threadId : String = "",
+    val isLaunch : Boolean = false
 )
 
 sealed class MessageItem {
@@ -48,6 +49,9 @@ class ChatBotViewModel: ViewModel() {
     }
     fun updateThreadId(threadId: String) {
         _uiState.update { it.copy(threadId = threadId) }
+    }
+    fun updateIsLaunch(isLaunch: Boolean) {
+        _uiState.update { it.copy(isLaunch = isLaunch) }
     }
     fun changeLastMessage(item : MessageItem) {
         _uiState.update { currentState ->
@@ -77,21 +81,21 @@ class ChatBotViewModel: ViewModel() {
         else {
             addMessage(MessageItem.MyMessageItem(message))
         }
-        var isLaunch = true
+        updateIsLaunch(true)
         viewModelScope.launch {
             delay(500)
             addMessage(MessageItem.BotMessageItem("응답을 생성중입니다.  "))
-            while (isLaunch){
+            while (uiState.value.isLaunch){
                 delay(1000)
-                if (isLaunch) {
+                if (uiState.value.isLaunch) {
                     changeLastMessage(MessageItem.BotMessageItem("응답을 생성중입니다.. "))
                 }
                 delay(1000)
-                if (isLaunch) {
+                if (uiState.value.isLaunch) {
                     changeLastMessage(MessageItem.BotMessageItem("응답을 생성중입니다..."))
                 }
                 delay(1000)
-                if (isLaunch) {
+                if (uiState.value.isLaunch) {
                     changeLastMessage(MessageItem.BotMessageItem("응답을 생성중입니다.  "))
                 }
             }
@@ -102,7 +106,7 @@ class ChatBotViewModel: ViewModel() {
                 val threadId = uiState.value.threadId
                 val request = SendMessageRequest(threadId,message)
                 val response = chatBotService.sendMessage(request)
-                isLaunch = false
+                updateIsLaunch(false)
                 delay(1000)
                 println(response)
                 try {
@@ -117,7 +121,7 @@ class ChatBotViewModel: ViewModel() {
                     changeLastMessage(MessageItem.BotMessageItem(response))
                 }
             } catch (e: HttpException) {
-                isLaunch = false
+                updateIsLaunch(false)
                 _uiEffect.emit(ChatBotSideEffect.Failed)
             }
         }

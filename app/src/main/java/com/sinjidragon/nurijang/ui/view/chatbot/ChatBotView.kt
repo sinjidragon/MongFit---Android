@@ -157,7 +157,7 @@ fun ChatBotView(
                         ) {
                             if (uiState.message.isEmpty()) {
                                 Text(
-                                    text = "AI 누리에게 질문하기",
+                                    text = if(!uiState.isLaunch) "AI 누리에게 질문하기" else "응답을 생성하는 중입니다",
                                     fontFamily = pretendard,
                                     fontWeight = FontWeight.Medium,
                                     fontSize = 14.sp,
@@ -167,13 +167,19 @@ fun ChatBotView(
                             innerTextField()
                         }
                     },
+                    enabled = !(uiState.isLaunch)
                 )
                 Spacer(Modifier.width(8.dp))
                 Image(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(end = 22.dp)
-                        .clickable { viewModel.sendMessage(uiState.message) },
+                        .clickable {
+                            if (uiState.message.isNotEmpty()) {
+                                viewModel.sendMessage(uiState.message)
+                                viewModel.updateMessage("")
+                            }
+                                   },
                     painter = painterResource(R.drawable.send_icon),
                     contentDescription = ""
                 )
