@@ -247,7 +247,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
                 Image(
                     modifier = Modifier
                         .align(Alignment.Center),
-                    painter = painterResource(id = R.drawable.mike_icon),
+                    painter = painterResource(id = R.drawable.bot_icon),
                     contentDescription = ""
                 )
             }

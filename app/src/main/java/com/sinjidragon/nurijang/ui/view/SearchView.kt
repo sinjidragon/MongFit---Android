@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.android.gms.maps.model.LatLng
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.getFacility
 import com.sinjidragon.nurijang.remote.api.suggestions
@@ -51,6 +50,7 @@ import com.sinjidragon.nurijang.ui.theme.gray
 import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
+import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
 @Composable
@@ -149,7 +149,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
             Box(
                 modifier = Modifier
                     .clickable {
-                        TODO("일단 보류기능")
+                        navController.navigate(NavGroup.CHAT_BOT)
                     }
                     .clip(RoundedCornerShape(8.dp))
                     .dropShadow()
@@ -160,7 +160,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
                 Image(
                     modifier = Modifier
                         .align(Alignment.Center),
-                    painter = painterResource(id = R.drawable.mike_icon),
+                    painter = painterResource(id = R.drawable.bot_icon),
                     contentDescription = ""
                 )
             }
