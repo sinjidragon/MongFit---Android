@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.remote.api.eventSearch
 import com.sinjidragon.nurijang.remote.api.getFacility
 import com.sinjidragon.nurijang.remote.api.suggestions
 import com.sinjidragon.nurijang.remote.data.FacilityLite
@@ -174,7 +175,16 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
             ){
                 items(eventList) { item ->
                     EventItem(
-                        text = item
+                        text = item,
+                        onClick = {
+                            coroutineScope.launch {
+                                val response = eventSearch(uiState.cameraPosition.longitude,uiState.cameraPosition.latitude,item)
+                                if (response != null) {
+                                    viewModel.setData(response)
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
                     )
                 }
             }
