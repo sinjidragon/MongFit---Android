@@ -57,6 +57,8 @@ fun ChatBotView(
     val listState = rememberLazyListState()
     LaunchedEffect(Unit) {
         viewModel.startChatBot()
+        viewModel.addMessage(MessageItem.BotMessageItem("안녕하세요! AI 누리입니다.\n실시간으로 유익한 맞춤형 답변을 제공해요\n무엇을 도와드릴까요?"))
+        viewModel.addMessage(MessageItem.RecommandMessageItem(listOf("서울에 있는 시설 추천해줘","가벼운 운동부터 시작하려면 뭘 하면 좋을까?","가까운 공원에서 할 수 있는 운동을 추천해줘.")))
     }
     LaunchedEffect(uiState.messages) {
         if (uiState.message.isNotEmpty()) {
@@ -275,7 +277,7 @@ fun RecommandMessageItem(item: MessageItem.RecommandMessageItem, viewModel: Chat
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
                         .border(width = 1.dp, color = mainColor, shape = RoundedCornerShape(12.dp))
-                        .clickable { viewModel.sendMessage(recommand,true) }
+                        .clickable { viewModel.sendMessage(recommand) }
                 ) {
                     Text(
                         modifier = Modifier
