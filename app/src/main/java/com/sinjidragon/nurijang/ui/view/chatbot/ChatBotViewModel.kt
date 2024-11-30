@@ -74,8 +74,8 @@ class ChatBotViewModel: ViewModel() {
             }
         }
     }
-    fun sendMessage(message: String,isRecommand: Boolean = false) {
-        if (isRecommand){
+    fun sendMessage(message: String) {
+        if (uiState.value.messages.isNotEmpty() && uiState.value.messages.last() is MessageItem.RecommandMessageItem) {
             changeLastMessage(MessageItem.MyMessageItem(message))
         }
         else {
