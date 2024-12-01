@@ -115,4 +115,16 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+    fun eventSearch(lo: Double,la: Double,text: String){
+        viewModelScope.launch {
+            try {
+                val searchService = Client.searchService
+                val request = SearchRequest(lo, la, text)
+                val response = searchService.eventSearch(request)
+                setData(response)
+            } catch (e: HttpException) {
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+        }
+    }
 }

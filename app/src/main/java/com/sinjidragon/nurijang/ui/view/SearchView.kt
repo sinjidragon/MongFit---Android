@@ -53,7 +53,7 @@ import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
 @Composable
-fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel()){
+fun SearchView(navController: NavController,viewModel: MainViewModel){
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setCameraPosition(37.532600,127.024612)
@@ -163,13 +163,12 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
                     EventItem(
                         text = item,
                         onClick = {
-                            coroutineScope.launch {
-                                val response = eventSearch(uiState.cameraPosition.longitude,uiState.cameraPosition.latitude,item)
-                                if (response != null) {
-                                    viewModel.setData(response)
-                                    navController.popBackStack()
-                                }
-                            }
+                            viewModel.eventSearch(
+                                uiState.cameraPosition.longitude,
+                                uiState.cameraPosition.latitude,
+                                item
+                            )
+                            navController.popBackStack()
                         }
                     )
                 }
