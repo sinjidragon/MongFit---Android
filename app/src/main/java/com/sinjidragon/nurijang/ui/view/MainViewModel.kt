@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.sinjidragon.nurijang.remote.Client
 import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.remote.data.FacilityLite
+import com.sinjidragon.nurijang.remote.data.GetDetailRequest
 import com.sinjidragon.nurijang.remote.data.GetFacilitiesRequest
 import com.sinjidragon.nurijang.remote.data.SearchRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -122,6 +123,20 @@ class MainViewModel : ViewModel() {
                 val request = SearchRequest(lo, la, text)
                 val response = searchService.eventSearch(request)
                 setData(response)
+            } catch (e: HttpException) {
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+        }
+    }
+    fun getFacility(id: Int, lo: Double, la: Double){
+        viewModelScope.launch {
+            try {
+                val facilityService = Client.facilityService
+                val request = GetDetailRequest(id, lo, la)
+                val response = facilityService.getFacility(request)
+                setSelectFacility(response)
+                setData(listOf(response))
+                setIsSelected(true)
             } catch (e: HttpException) {
                 _uiEffect.emit(MainSideEffect.Failed)
             }

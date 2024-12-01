@@ -26,10 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,11 +36,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
-import com.sinjidragon.nurijang.remote.api.eventSearch
-import com.sinjidragon.nurijang.remote.api.getFacility
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray
 import com.sinjidragon.nurijang.ui.theme.gray2
@@ -182,17 +176,12 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                         text = item.fcltyNm,
                         onClick = {
                             coroutineScope.launch {
-                                val response = getFacility(
+                                viewModel.getFacility(
                                     item.id,
                                     uiState.cameraPosition.longitude,
                                     uiState.cameraPosition.latitude,
                                 )
-                                if (response != null){
-                                    viewModel.setSelectFacility(response)
-                                    viewModel.setData(listOf(response))
-                                    navController.popBackStack()
-                                }
-
+                                navController.popBackStack()
                             }
                         }
                     )
