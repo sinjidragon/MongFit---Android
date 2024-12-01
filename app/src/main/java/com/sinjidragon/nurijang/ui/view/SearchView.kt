@@ -44,8 +44,6 @@ import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.remote.api.eventSearch
 import com.sinjidragon.nurijang.remote.api.getFacility
-import com.sinjidragon.nurijang.remote.api.suggestions
-import com.sinjidragon.nurijang.remote.data.FacilityLite
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray
 import com.sinjidragon.nurijang.ui.theme.gray2
@@ -56,16 +54,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel()){
-    var searchText by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setCameraPosition(37.532600,127.024612)
-    var eventList by remember {
-        mutableStateOf<List<String>>(emptyList())
-    }
-    var facilityList by remember {
-        mutableStateOf<List<FacilityLite>>(emptyList())
-    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -107,27 +98,22 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
                 BasicTextField(
                     modifier = Modifier
                         .align(Alignment.CenterVertically),
-                    value = searchText,
-                    onValueChange = {
-                        searchText = it
-                        coroutineScope.launch {
-                            val response = suggestions(
-                                uiState.cameraPosition.longitude,
-                                uiState.cameraPosition.latitude,
-                                text = searchText
-                            )
-                            if (response != null){
-                                eventList = response.mainItems
-                                facilityList = response.facilities
-                            }
-                        }
-                                    },
+                    value = uiState.searchText,
+                    onValueChange =
+                    { newValue ->
+                        viewModel.setSearchText(newValue)
+                        viewModel.suggestions(
+                            uiState.cameraPosition.longitude,
+                            uiState.cameraPosition.latitude,
+                            newValue
+                        )
+                    },
                     decorationBox = { innerTextField ->
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.CenterStart
                         ) {
-                            if (searchText.isEmpty()) {
+                            if (uiState.searchText.isEmpty()) {
                                 Text(
                                     fontFamily = pretendard,
                                     text = "시설명 종목",
@@ -173,7 +159,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
             LazyColumn (
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ){
-                items(eventList) { item ->
+                items(uiState.eventList) { item ->
                     EventItem(
                         text = item,
                         onClick = {
@@ -192,7 +178,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel = viewModel
             LazyColumn (
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ){
-                items(facilityList) { item ->
+                items(uiState.searchFacilityList) { item ->
                     FacilityItem(
                         text = item.fcltyNm,
                         onClick = {
