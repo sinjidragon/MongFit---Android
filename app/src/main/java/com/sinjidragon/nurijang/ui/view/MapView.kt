@@ -73,7 +73,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
 @Composable
-fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()) {
+fun MapView(navController: NavController, viewModel: MainViewModel) {
     val uiState by viewModel.uiState. collectAsState()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val selectFacilityState = rememberModalBottomSheetState(
@@ -132,8 +132,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel = viewModel()
     }
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
-            moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
-            viewModel.setIsSelected(true)
+            if (uiState.isSelected){
+                moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
+            }
         }
     }
     GoogleMap(
