@@ -133,6 +133,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "map") {
             if (uiState.isSelected){
+                println("${uiState.selectFacility.fcltyCrdntLo} ${uiState.selectFacility.fcltyCrdntLa}")
                 moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
             }
         }
@@ -140,16 +141,11 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        properties = MapProperties(),
+        properties = MapProperties(
+            isMyLocationEnabled = true
+        ),
         uiSettings = MapUiSettings(zoomControlsEnabled = false),
     ) {
-        currentLocation.value?.let { location ->
-            CurrentLocationMarker(
-                context = context,
-                position = location,
-                iconResourceId = R.drawable.now_location_icon
-            )
-        }
         Clustering(
             items = uiState.facilityList,
             onClusterItemClick = { item ->
