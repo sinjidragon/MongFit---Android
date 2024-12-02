@@ -1,4 +1,4 @@
-package com.sinjidragon.semtong.nav
+package com.sinjidragon.nurijang.ui.nav
 
 object NavGroup {
     const val SPLASH = "splash"

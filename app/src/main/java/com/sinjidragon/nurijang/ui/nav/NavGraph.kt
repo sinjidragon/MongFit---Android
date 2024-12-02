@@ -1,4 +1,4 @@
-package com.sinjidragon.semtong.nav
+package com.sinjidragon.nurijang.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
