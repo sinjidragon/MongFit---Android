@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.android.gms.location.LocationServices
@@ -55,11 +53,9 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
-import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
-import com.sinjidragon.nurijang.remote.api.getFacilities
-import com.sinjidragon.nurijang.ui.component.CurrentLocationMarker
+import com.sinjidragon.nurijang.ui.component.CustomClustering
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
 import com.sinjidragon.nurijang.ui.theme.dropShadow
@@ -146,9 +142,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
         ),
         uiSettings = MapUiSettings(zoomControlsEnabled = false),
     ) {
-        Clustering(
+        CustomClustering(
             items = uiState.facilityList,
-            onClusterItemClick = { item ->
+            onItemClick = { item ->
                 viewModel.setSelectFacility(item)
                 coroutineScope.launch {
                     moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
@@ -183,6 +179,43 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
                 }
             }
         )
+//        Clustering(
+//            items = uiState.facilityList,
+//            onClusterItemClick = { item ->
+//                viewModel.setSelectFacility(item)
+//                coroutineScope.launch {
+//                    moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
+//                }
+//                viewModel.setIsSelected(true)
+//                true
+//            },
+//            clusterItemContent = { item ->
+//                Box {
+//                    val text = if (cameraPositionState.position.zoom >= 16f) {
+//                        item.fcltyNm
+//                    } else {
+//                        ""
+//                    }
+//                    Image(
+//                        modifier = Modifier
+//                            .align(Alignment.Center)
+//                            .size(16.dp, 22.dp),
+//                        painter = painterResource(R.drawable.place_maker_icon),
+//                        contentDescription = ""
+//                    )
+//                    Text(
+//                        text = text,
+//                        fontSize = 14.sp,
+//                        color = subColor,
+//                        fontFamily = pretendard,
+//                        fontWeight = FontWeight.Normal,
+//                        modifier = Modifier
+//                            .align(Alignment.TopCenter)
+//                            .padding(top = 40.dp)
+//                    )
+//                }
+//            }
+//        )
     }
     Box(
         modifier = Modifier
