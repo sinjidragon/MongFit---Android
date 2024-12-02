@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.nav.NavGroup
 import com.sinjidragon.nurijang.ui.theme.pretendard
-import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.delay
 
 @Composable

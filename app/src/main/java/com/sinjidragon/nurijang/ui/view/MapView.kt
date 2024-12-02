@@ -52,22 +52,21 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
 import com.sinjidragon.nurijang.ui.component.CustomClustering
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
+import com.sinjidragon.nurijang.ui.nav.NavGroup
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
 import com.sinjidragon.nurijang.ui.theme.subColor
-import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapView(navController: NavController, viewModel: MainViewModel) {
     val uiState by viewModel.uiState. collectAsState()
@@ -179,43 +178,6 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
                 }
             }
         )
-//        Clustering(
-//            items = uiState.facilityList,
-//            onClusterItemClick = { item ->
-//                viewModel.setSelectFacility(item)
-//                coroutineScope.launch {
-//                    moveCamera(item.fcltyCrdntLo, item.fcltyCrdntLa)
-//                }
-//                viewModel.setIsSelected(true)
-//                true
-//            },
-//            clusterItemContent = { item ->
-//                Box {
-//                    val text = if (cameraPositionState.position.zoom >= 16f) {
-//                        item.fcltyNm
-//                    } else {
-//                        ""
-//                    }
-//                    Image(
-//                        modifier = Modifier
-//                            .align(Alignment.Center)
-//                            .size(16.dp, 22.dp),
-//                        painter = painterResource(R.drawable.place_maker_icon),
-//                        contentDescription = ""
-//                    )
-//                    Text(
-//                        text = text,
-//                        fontSize = 14.sp,
-//                        color = subColor,
-//                        fontFamily = pretendard,
-//                        fontWeight = FontWeight.Normal,
-//                        modifier = Modifier
-//                            .align(Alignment.TopCenter)
-//                            .padding(top = 40.dp)
-//                    )
-//                }
-//            }
-//        )
     }
     Box(
         modifier = Modifier

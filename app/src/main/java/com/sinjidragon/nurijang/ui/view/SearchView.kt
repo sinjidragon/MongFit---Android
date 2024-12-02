@@ -38,12 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.nav.NavGroup
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray
 import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
-import com.sinjidragon.semtong.nav.NavGroup
 import kotlinx.coroutines.launch
 
 @Composable
