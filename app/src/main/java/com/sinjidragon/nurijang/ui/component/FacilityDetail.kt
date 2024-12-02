@@ -32,6 +32,7 @@ import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
 import com.sinjidragon.nurijang.ui.theme.subColor
+import java.util.Locale
 
 @Composable
 fun FacilityDetail(
@@ -64,7 +65,7 @@ fun FacilityDetail(
 
         return when {
             distanceInKm >= 10 -> "${distanceInKm.toInt()}km"
-            distanceInKm >= 1 -> String.format("%.1fkm", distanceInKm)
+            distanceInKm >= 1 -> String.format(Locale.KOREA, "%.1fkm", distanceInKm)
             else -> "${distanceInMeters.toInt()}m"
         }
     }
