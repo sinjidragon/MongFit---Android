@@ -51,7 +51,6 @@ fun <T : ClusterItem>CustomClustering(
             CircleContent(
                 modifier = Modifier.size(40.dp),
                 text = "%,d".format(cluster.size),
-                color = Color.Green,
             )
         },
         clusterItemContent = clusterItemContent,
@@ -84,14 +83,13 @@ fun <T : ClusterItem>CustomClustering(
 
 @Composable
 private fun CircleContent(
-    color: Color,
     text: String,
     modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier,
         shape = CircleShape,
-        color = color,
+        color = Color.Gray,
         contentColor = Color.White,
         border = BorderStroke(1.dp, Color.White)
     ) {
