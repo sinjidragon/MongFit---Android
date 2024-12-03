@@ -154,29 +154,14 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
                 viewModel.setIsSelected(true)
                 true
             },
-            clusterItemContent = { item ->
+            clusterItemContent = {
                 Box {
-                    val text = if (cameraPositionState.position.zoom >= 16f) {
-                        item.fcltyNm
-                    } else {
-                        ""
-                    }
                     Image(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(16.dp, 22.dp),
                         painter = painterResource(R.drawable.place_maker_icon),
                         contentDescription = ""
-                    )
-                    Text(
-                        text = text,
-                        fontSize = 14.sp,
-                        color = subColor,
-                        fontFamily = pretendard,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = 40.dp)
                     )
                 }
             }
