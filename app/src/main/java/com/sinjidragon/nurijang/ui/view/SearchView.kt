@@ -102,6 +102,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
             }
                 Spacer(modifier = Modifier.width(6.dp))
                 BasicTextField(
+                    singleLine = true,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .focusRequester(focusRequester),
