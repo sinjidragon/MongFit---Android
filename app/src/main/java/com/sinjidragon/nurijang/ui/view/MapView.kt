@@ -139,7 +139,10 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
         properties = MapProperties(
             isMyLocationEnabled = true
         ),
-        uiSettings = MapUiSettings(zoomControlsEnabled = false),
+        uiSettings = MapUiSettings(
+            zoomControlsEnabled = false,
+            myLocationButtonEnabled = false,
+        ),
     ) {
         CustomClustering(
             items = uiState.facilityList,
