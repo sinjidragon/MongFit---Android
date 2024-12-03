@@ -29,10 +29,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -56,7 +59,10 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setCameraPosition(37.532600,127.024612)
-
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit){
+        focusRequester.requestFocus()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -97,7 +103,8 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                 Spacer(modifier = Modifier.width(6.dp))
                 BasicTextField(
                     modifier = Modifier
-                        .align(Alignment.CenterVertically),
+                        .align(Alignment.CenterVertically)
+                        .focusRequester(focusRequester),
                     value = uiState.searchText,
                     onValueChange =
                     { newValue ->
