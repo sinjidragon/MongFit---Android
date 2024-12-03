@@ -74,6 +74,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
     val selectFacilityState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    val facilityListState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     viewModel.setPermission(
@@ -278,9 +281,11 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
         }
         if (uiState.showBottomSheet) {
             ModalBottomSheet(
+                sheetState = facilityListState,
                 modifier = Modifier
                     .height(650.dp)
-                    .innerShadow(),
+                    .innerShadow()
+                    .align(Alignment.BottomCenter),
                 onDismissRequest = {
                     viewModel.setShowBottomSheet(false)
                 },
@@ -314,9 +319,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
             ModalBottomSheet(
                 sheetState = selectFacilityState,
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .height(230.dp)
-                    .innerShadow()
-                    .align(Alignment.BottomCenter),
+                    .innerShadow(),
                 containerColor = Color.White,
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 scrimColor = Color.Transparent,
