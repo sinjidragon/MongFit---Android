@@ -327,6 +327,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
                 FacilityDetail(
                     modifier = Modifier,
                     facilityName = uiState.selectFacility.fcltyNm,
+                    tellNumber = uiState.selectFacility.rprsntvTelNo,
                     eventName = uiState.selectFacility.mainItemNm,
                     distance = uiState.selectFacility.distance,
                     facilityAddress = uiState.selectFacility.fcltyAddr,
