@@ -144,7 +144,6 @@ class MainViewModel : ViewModel() {
                 val response = facilityService.getFacility(request)
                 setSelectFacility(response)
                 setData(listOf(response))
-                setIsSelected(true)
             } catch (e: HttpException) {
                 _uiEffect.emit(MainSideEffect.Failed)
             }

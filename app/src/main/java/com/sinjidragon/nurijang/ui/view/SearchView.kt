@@ -196,6 +196,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                                 uiState.cameraPosition.longitude,
                                 uiState.cameraPosition.latitude,
                             )
+                            viewModel.setIsSelected(true)
                             navController.popBackStack()
                         },
                         isButton = true
@@ -240,6 +241,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                                         uiState.cameraPosition.longitude,
                                         uiState.cameraPosition.latitude,
                                     )
+                                    viewModel.setIsSelected(true)
                                     navController.popBackStack()
                                 }
                             }
