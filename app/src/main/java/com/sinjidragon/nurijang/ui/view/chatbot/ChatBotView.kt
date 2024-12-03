@@ -113,6 +113,9 @@ fun ChatBotView(
             verticalArrangement = Arrangement.spacedBy(22.dp),
             modifier = Modifier.fillMaxWidth().weight(1f)
         ){
+            item {
+                Spacer(Modifier.height(20.dp))
+            }
             items(uiState.messages){ item->
                 when (item) {
                     is MessageItem.MyMessageItem -> {
@@ -126,6 +129,9 @@ fun ChatBotView(
                     }
 
                 }
+            }
+            item {
+                Spacer(Modifier.height(20.dp))
             }
         }
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
