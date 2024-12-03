@@ -25,6 +25,8 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
+import com.sinjidragon.nurijang.ui.theme.mainColor
+import com.sinjidragon.nurijang.ui.theme.pretendard
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
@@ -36,11 +38,12 @@ fun <T : ClusterItem>CustomClustering(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
-    val clusterManager = rememberClusterManager<T>()
+
+    val clusterManager = rememberClusterManager<T>() ?: return
 
     // Here the clusterManager is being customized with a NonHierarchicalViewBasedAlgorithm.
     // This speeds up by a factor the rendering of items on the screen.
-    clusterManager?.setAlgorithm(
+    clusterManager.setAlgorithm(
         NonHierarchicalViewBasedAlgorithm(
             screenWidth.value.toInt(),
             screenHeight.value.toInt()
@@ -68,17 +71,15 @@ fun <T : ClusterItem>CustomClustering(
         }
     }
     SideEffect {
-        if (clusterManager?.renderer != renderer) {
-            clusterManager?.renderer = renderer ?: return@SideEffect
+        if (clusterManager.renderer != renderer) {
+            clusterManager.renderer = renderer ?: return@SideEffect
         }
     }
 
-    if (clusterManager != null) {
-        Clustering(
-            items = items,
-            clusterManager = clusterManager,
-        )
-    }
+    Clustering(
+        items = items,
+        clusterManager = clusterManager,
+    )
 }
 
 @Composable
@@ -89,7 +90,7 @@ private fun CircleContent(
     Surface(
         modifier,
         shape = CircleShape,
-        color = Color.Gray,
+        color = mainColor,
         contentColor = Color.White,
         border = BorderStroke(1.dp, Color.White)
     ) {
@@ -97,8 +98,10 @@ private fun CircleContent(
             Text(
                 text,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center
+                fontFamily = pretendard,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                color = Color.White
             )
         }
     }
