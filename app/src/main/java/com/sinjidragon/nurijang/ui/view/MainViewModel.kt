@@ -39,7 +39,9 @@ data class MainData(
     val currentLocation : LatLng = LatLng(37.532600,127.024612),
     val eventList: List<String> = emptyList(),
     val searchFacilityList: List<FacilityLite> = emptyList(),
-    val searchText: String = ""
+    val searchText: String = "",
+    val isBaseSearch : Boolean = false,
+    val baseSearchText: String = "",
 )
 
 sealed interface MainSideEffect {
@@ -89,13 +91,18 @@ class MainViewModel : ViewModel() {
     fun setSearchText(searchText: String){
         _uiState.update { it.copy(searchText = searchText) }
     }
+    fun setIsBaseSearch(isBaseSearch: Boolean) {
+        _uiState.update { it.copy(isBaseSearch = isBaseSearch) }
+    }
+    fun setBaseSearchText(baseSearchText: String) {
+        _uiState.update { it.copy(baseSearchText = baseSearchText) }
+    }
 
-
-    fun getFacilities(Lo: Double, La: Double) {
+    fun getFacilities(lo: Double, la: Double) {
         viewModelScope.launch {
             try {
                 val facilityService = Client.facilityService
-                val request = GetFacilitiesRequest(Lo,La)
+                val request = GetFacilitiesRequest(lo,la)
                 val response = facilityService.getFacilities(request)
                 setData(response)
             } catch (e: HttpException) {
@@ -123,6 +130,7 @@ class MainViewModel : ViewModel() {
                 val request = SearchRequest(lo, la, text)
                 val response = searchService.eventSearch(request)
                 setData(response)
+                println(uiState.value.facilityList)
             } catch (e: HttpException) {
                 _uiEffect.emit(MainSideEffect.Failed)
             }
@@ -137,6 +145,18 @@ class MainViewModel : ViewModel() {
                 setSelectFacility(response)
                 setData(listOf(response))
                 setIsSelected(true)
+            } catch (e: HttpException) {
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+        }
+    }
+    fun baseSearch(lo: Double,la: Double, text: String){
+        viewModelScope.launch {
+            try {
+                val searchService = Client.searchService
+                val request = SearchRequest(lo,la,text)
+                val response = searchService.baseSearch(request)
+                setData(response)
             } catch (e: HttpException) {
                 _uiEffect.emit(MainSideEffect.Failed)
             }

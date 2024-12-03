@@ -259,6 +259,10 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
                 .background(Color.White)
                 .clickable {
                     coroutineScope.launch {
+                        viewModel.setCameraPosition(
+                            cameraPositionState.position.target.longitude,
+                            cameraPositionState.position.target.latitude
+                        )
                         viewModel.getFacilities(
                             cameraPositionState.position.target.longitude,
                             cameraPositionState.position.target.latitude

@@ -15,4 +15,8 @@ interface SearchService {
     suspend fun eventSearch(
         @Body request: SearchRequest
     ): List<Facility>
+    @POST("search")
+    suspend fun baseSearch(
+        @Body request: SearchRequest
+    ): List<Facility>
 }

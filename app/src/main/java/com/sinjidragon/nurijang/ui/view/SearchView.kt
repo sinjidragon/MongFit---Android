@@ -22,8 +22,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,10 +37,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.nav.NavGroup
 import com.sinjidragon.nurijang.ui.theme.dropShadow
 import com.sinjidragon.nurijang.ui.theme.gray
@@ -51,6 +56,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setCameraPosition(37.532600,127.024612)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -102,6 +108,19 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                             newValue
                         )
                     },
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search,
+                    ),
+                    keyboardActions = KeyboardActions {
+                        println("clicked")
+                        viewModel.setBaseSearchText(uiState.searchText)
+                        viewModel.baseSearch(
+                            uiState.cameraPosition.longitude,
+                            uiState.cameraPosition.latitude,
+                            uiState.searchText
+                        )
+                        viewModel.setIsBaseSearch(true)
+                    },
                     decorationBox = { innerTextField ->
                         Box(
                             modifier = Modifier.fillMaxWidth(),
@@ -146,45 +165,79 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                 )
             }
         }
-        Column (
-            modifier = Modifier
-                .offset(y = 70.dp)
-        ){
-            LazyColumn (
-                verticalArrangement = Arrangement.spacedBy(18.dp)
-            ){
-                items(uiState.eventList) { item ->
-                    EventItem(
-                        text = item,
+        if (uiState.isBaseSearch){
+            LazyColumn(modifier = Modifier.fillMaxWidth().padding(top = 80.dp)) {
+                item {
+                    Text(
+                        "\"${uiState.baseSearchText}\" 검색결과",
+                        modifier = Modifier.padding(start = 24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+                items(uiState.facilityList){ item->
+                    FacilityDetail(
+                        modifier = Modifier,
+                        facilityName = item.fcltyNm,
+                        eventName = item.mainItemNm,
+                        distance = item.distance,
+                        tellNumber = item.rprsntvTelNo,
+                        facilityAddress = item.fcltyAddr,
+                        facilityDetailAddress = item.fcltyDetailAddr,
                         onClick = {
-                            viewModel.eventSearch(
+                            viewModel.getFacility(
+                                item.id,
                                 uiState.cameraPosition.longitude,
                                 uiState.cameraPosition.latitude,
-                                item
                             )
                             navController.popBackStack()
-                        }
+                        },
+                        isButton = true
                     )
                 }
+
             }
-            Spacer(modifier = Modifier.height(18.dp))
-            LazyColumn (
-                verticalArrangement = Arrangement.spacedBy(18.dp)
-            ){
-                items(uiState.searchFacilityList) { item ->
-                    FacilityItem(
-                        text = item.fcltyNm,
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModel.getFacility(
-                                    item.id,
+        }
+        else {
+            Column(
+                modifier = Modifier
+                    .offset(y = 70.dp)
+            ) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                ) {
+                    items(uiState.eventList) { item ->
+                        EventItem(
+                            text = item,
+                            onClick = {
+                                viewModel.eventSearch(
                                     uiState.cameraPosition.longitude,
                                     uiState.cameraPosition.latitude,
+                                    item
                                 )
                                 navController.popBackStack()
                             }
-                        }
-                    )
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(18.dp))
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                ) {
+                    items(uiState.searchFacilityList) { item ->
+                        FacilityItem(
+                            text = item.fcltyNm,
+                            onClick = {
+                                coroutineScope.launch {
+                                    viewModel.getFacility(
+                                        item.id,
+                                        uiState.cameraPosition.longitude,
+                                        uiState.cameraPosition.latitude,
+                                    )
+                                    navController.popBackStack()
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
