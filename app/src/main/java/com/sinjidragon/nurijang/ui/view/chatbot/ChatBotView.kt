@@ -60,8 +60,10 @@ fun ChatBotView(
         viewModel.addMessage(MessageItem.BotMessageItem("안녕하세요! AI 누리입니다.\n실시간으로 유익한 맞춤형 답변을 제공해요\n무엇을 도와드릴까요?"))
         viewModel.addMessage(MessageItem.RecommandMessageItem(listOf("운동 후 근육통을 줄이는 방법을 알려줘.","가벼운 운동부터 시작하려면 뭘 하면 좋을까?","가까운 공원에서 할 수 있는 운동을 추천해줘.")))
     }
-    LaunchedEffect(uiState.messages) {
-        if (uiState.message.isNotEmpty()) {
+    LaunchedEffect(uiState.messages.size) {
+        println(1)
+        if (uiState.messages.isNotEmpty()) {
+            println(2)
             listState.scrollToItem(uiState.messages.size - 1)
         }
     }
