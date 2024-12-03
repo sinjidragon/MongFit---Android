@@ -25,7 +25,7 @@ android {
             useSupportLibrary = true
         }
         buildConfigField("String", "BASE_URL", "\"${localProperties["BASE_URL"]}\"")
-        manifestPlaceholders["GOOGLE_API_KEY"] = {localProperties["GOOGLE_API_KEY"]}
+        manifestPlaceholders["GOOGLE_API_KEY"] = localProperties["GOOGLE_API_KEY"] as String
     }
 
     buildTypes {
