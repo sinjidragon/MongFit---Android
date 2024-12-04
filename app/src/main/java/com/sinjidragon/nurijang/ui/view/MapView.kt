@@ -63,7 +63,6 @@ import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
-import com.sinjidragon.nurijang.ui.theme.subColor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
