@@ -115,6 +115,7 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
                             uiState.cameraPosition.latitude,
                             newValue
                         )
+                        viewModel.setIsBaseSearch(false)
                     },
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Search,
