@@ -1,10 +1,8 @@
 package com.sinjidragon.nurijang
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.sinjidragon.nurijang.ui.nav.NavGraph
 import com.sinjidragon.nurijang.ui.theme.NurijangTheme

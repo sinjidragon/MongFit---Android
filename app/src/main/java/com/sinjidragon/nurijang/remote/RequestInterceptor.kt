@@ -3,8 +3,6 @@ package com.sinjidragon.nurijang.remote
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -19,15 +17,6 @@ class RequestInterceptor(
             }
 
             val request = chain.request()
-//            val shouldSkipHeader = request.url.encodedPath.contains("/auth") && !request.url.encodedPath.contains("/auth/me")
-
-//            val newRequest = if (shouldSkipHeader) {
-//                request.newBuilder().build()
-//            } else {
-//                request.newBuilder()
-//                    .build()
-//            }
-            //헤더 뺴야할거 잇으면 주소 넣고 주석 푸셈 글고 이 아랫놈 주석처리 하고
             val newRequest = request.newBuilder()
                 .build()
 

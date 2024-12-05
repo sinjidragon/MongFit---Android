@@ -1,8 +1,5 @@
 package com.sinjidragon.nurijang.remote
 
-import android.content.Context
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.sinjidragon.nurijang.BuildConfig.BASE_URL

@@ -41,8 +41,6 @@ fun <T : ClusterItem>CustomClustering(
 
     val clusterManager = rememberClusterManager<T>() ?: return
 
-    // Here the clusterManager is being customized with a NonHierarchicalViewBasedAlgorithm.
-    // This speeds up by a factor the rendering of items on the screen.
     clusterManager.setAlgorithm(
         NonHierarchicalViewBasedAlgorithm(
             screenWidth.value.toInt(),
@@ -60,7 +58,6 @@ fun <T : ClusterItem>CustomClustering(
         clusterManager = clusterManager,
     )
     SideEffect {
-        clusterManager ?: return@SideEffect
         clusterManager.setOnClusterClickListener {
             Log.d(TAG, "Cluster clicked! $it")
             false
