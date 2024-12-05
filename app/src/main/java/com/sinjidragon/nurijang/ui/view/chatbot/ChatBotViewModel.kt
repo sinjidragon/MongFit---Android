@@ -9,6 +9,7 @@ import com.sinjidragon.nurijang.remote.Client
 import com.sinjidragon.nurijang.remote.NoConnectivityException
 import com.sinjidragon.nurijang.remote.data.BotMessage
 import com.sinjidragon.nurijang.remote.data.SendMessageRequest
+import com.sinjidragon.nurijang.ui.view.MainSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,9 @@ data class ChatBotState(
     val messages : List<MessageItem> = emptyList(),
     val message : String = "",
     val threadId : String = "",
-    val isLaunch : Boolean = false
+    val isLaunch : Boolean = false,
+    val isError: Boolean = false,
+    val errorText: String = ""
 )
 
 sealed class MessageItem {
@@ -66,6 +69,12 @@ class ChatBotViewModel: ViewModel() {
             currentState.copy(messages = updatedMessages)
         }
     }
+    fun setIsError(isError: Boolean) {
+        _uiState.update { it.copy(isError = isError) }
+    }
+    fun setErrorText(errorText: String) {
+        _uiState.update { it.copy(errorText = errorText) }
+    }
     fun startChatBot() {
         viewModelScope.launch {
             try {
@@ -74,10 +83,13 @@ class ChatBotViewModel: ViewModel() {
                 updateThreadId(response.id)
                 println(uiState.value.threadId)
             } catch (e: HttpException) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(ChatBotSideEffect.Failed)
             }
             catch (e: NoConnectivityException){
-                Log.d("hello","no internet")
+                setErrorText("네트워크 연결을 확인해 주세요")
+                Log.d("jalbwa","오류")
+                _uiEffect.emit(ChatBotSideEffect.Failed)
             }
         }
     }
@@ -129,9 +141,12 @@ class ChatBotViewModel: ViewModel() {
                 }
             } catch (e: HttpException) {
                 updateIsLaunch(false)
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(ChatBotSideEffect.Failed)
             }catch (e:NoConnectivityException){
-                Log.d("hello","no internet")
+                setErrorText("네트워크 연결을 확인해 주세요")
+                Log.d("jalbwa","오류")
+                _uiEffect.emit(ChatBotSideEffect.Failed)
             }
         }
     }

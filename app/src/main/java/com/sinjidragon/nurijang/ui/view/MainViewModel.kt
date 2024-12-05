@@ -1,9 +1,11 @@
 package com.sinjidragon.nurijang.ui.view
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.sinjidragon.nurijang.remote.Client
+import com.sinjidragon.nurijang.remote.NoConnectivityException
 import com.sinjidragon.nurijang.remote.data.Facility
 import com.sinjidragon.nurijang.remote.data.FacilityLite
 import com.sinjidragon.nurijang.remote.data.GetDetailRequest
@@ -42,6 +44,8 @@ data class MainData(
     val searchText: String = "",
     val isBaseSearch : Boolean = false,
     val baseSearchText: String = "",
+    val isError: Boolean = false,
+    val errorText: String = ""
 )
 
 sealed interface MainSideEffect {
@@ -97,6 +101,12 @@ class MainViewModel() : ViewModel() {
     fun setBaseSearchText(baseSearchText: String) {
         _uiState.update { it.copy(baseSearchText = baseSearchText) }
     }
+    fun setIsError(isError: Boolean) {
+        _uiState.update { it.copy(isError = isError) }
+    }
+    fun setErrorText(errorText: String) {
+        _uiState.update { it.copy(errorText = errorText) }
+    }
 
     fun getFacilities(lo: Double, la: Double) {
         viewModelScope.launch {
@@ -106,6 +116,12 @@ class MainViewModel() : ViewModel() {
                 val response = facilityService.getFacilities(request)
                 setData(response)
             } catch (e: HttpException) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+            catch (e:NoConnectivityException){
+                setErrorText("네트워크 연결을 확인해 주세요")
+                Log.d("jalbwa","오류")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -119,6 +135,12 @@ class MainViewModel() : ViewModel() {
                 setEventList(response.mainItems)
                 setSearchFacilityList(response.facilities)
             } catch (e: HttpException) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+            catch (e:NoConnectivityException){
+                setErrorText("네트워크 연결을 확인해 주세요")
+                Log.d("jalbwa","오류")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -132,6 +154,11 @@ class MainViewModel() : ViewModel() {
                 setData(response)
                 println(uiState.value.facilityList)
             } catch (e: HttpException) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+            catch (e:NoConnectivityException){
+                setErrorText("네트워크 연결을 확인해 주세요")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -145,6 +172,11 @@ class MainViewModel() : ViewModel() {
                 setSelectFacility(response)
                 setData(listOf(response))
             } catch (e: HttpException) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+            catch (e:NoConnectivityException){
+                setErrorText("네트워크 연결을 확인해 주세요")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -157,6 +189,11 @@ class MainViewModel() : ViewModel() {
                 val response = searchService.baseSearch(request)
                 setData(response)
             } catch (e: HttpException) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }
+            catch (e:NoConnectivityException){
+                setErrorText("네트워크 연결을 확인해 주세요")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }

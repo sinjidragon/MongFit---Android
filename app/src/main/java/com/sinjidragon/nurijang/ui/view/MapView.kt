@@ -1,8 +1,10 @@
 package com.sinjidragon.nurijang.ui.view
 
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,11 +45,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.google.android.gms.common.api.Api.Client
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -57,6 +56,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.component.BaseAlert
 import com.sinjidragon.nurijang.ui.component.CustomClustering
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.component.MoveCurrentLocationButton
@@ -81,6 +81,9 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
     )
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
+
+
     viewModel.setPermission(
         ContextCompat.checkSelfPermission(
             context,
@@ -89,6 +92,17 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
     )
     LaunchedEffect(Unit) {
         println(uiState.facilityList)
+    }
+    LaunchedEffect(viewModel) {
+        Log.d("jalbwa","${viewModel.uiEffect}")
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                MainSideEffect.Failed -> {
+                    Log.d("jalbwa","failed")
+                    viewModel.setIsError(true)
+                }
+            }
+        }
     }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -177,6 +191,17 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
             .fillMaxSize()
             .systemBarsPadding()
     ) {
+        AnimatedVisibility(
+            visible = uiState.isError
+        ) {
+            BaseAlert(
+                contentText = uiState.errorText,
+                onDismissRequest = {
+                    viewModel.setIsError(false)
+                },
+                onButtonClick = {viewModel.setIsError(false)}
+            )
+        }
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp)

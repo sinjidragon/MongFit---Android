@@ -1,5 +1,7 @@
 package com.sinjidragon.nurijang.ui.view
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.component.BaseAlert
 import com.sinjidragon.nurijang.ui.component.FacilityDetail
 import com.sinjidragon.nurijang.ui.nav.NavGroup
 import com.sinjidragon.nurijang.ui.theme.dropShadow
@@ -63,12 +66,34 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
     LaunchedEffect(Unit){
         focusRequester.requestFocus()
     }
+    LaunchedEffect(viewModel) {
+        Log.d("jalbwa","${viewModel.uiEffect}")
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                MainSideEffect.Failed -> {
+                    Log.d("jalbwa","failed")
+                    viewModel.setIsError(true)
+                }
+            }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .systemBarsPadding()
     ){
+        AnimatedVisibility(
+            visible = uiState.isError
+        ) {
+            BaseAlert(
+                contentText = uiState.errorText,
+                onDismissRequest = {
+                    viewModel.setIsError(false)
+                },
+                onButtonClick = {viewModel.setIsError(false)}
+            )
+        }
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
