@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -320,25 +321,38 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 scrimColor = Color.Transparent
             ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(uiState.facilityList) { facility ->
-                        FacilityDetail(
-                            modifier = Modifier,
-                            facilityName = facility.fcltyNm,
-                            eventName = facility.mainItemNm,
-                            facilityAddress = facility.fcltyAddr,
-                            facilityDetailAddress = facility.fcltyDetailAddr,
-                            tellNumber = facility.rprsntvTelNo,
-                            distance = facility.distance,
-                            onClick = {
-                                coroutineScope.launch {
-                                    moveCamera(facility.fcltyCrdntLo, facility.fcltyCrdntLa)
+                if (uiState.facilityList.isNotEmpty()) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        items(uiState.facilityList) { facility ->
+                            FacilityDetail(
+                                modifier = Modifier,
+                                facilityName = facility.fcltyNm,
+                                eventName = facility.mainItemNm,
+                                facilityAddress = facility.fcltyAddr,
+                                facilityDetailAddress = facility.fcltyDetailAddr,
+                                tellNumber = facility.rprsntvTelNo,
+                                distance = facility.distance,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        moveCamera(facility.fcltyCrdntLo, facility.fcltyCrdntLa)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
+                }
+                else {
+                    Text(
+                        modifier = Modifier.fillMaxSize(),
+                        textAlign = TextAlign.Center,
+                        text = "결과가 없습니다",
+                        fontFamily = pretendard,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp,
+                        color = gray2
+                    )
                 }
             }
         }

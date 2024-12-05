@@ -200,81 +200,105 @@ fun SearchView(navController: NavController,viewModel: MainViewModel){
             }
         }
         if (uiState.isBaseSearch){
-            LazyColumn(modifier = Modifier.fillMaxWidth().padding(top = 80.dp)) {
-                item {
-                    Text(
-                        "\"${uiState.baseSearchText}\" 검색결과",
-                        modifier = Modifier.padding(start = 24.dp)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-                items(uiState.facilityList){ item->
-                    FacilityDetail(
-                        modifier = Modifier,
-                        facilityName = item.fcltyNm,
-                        eventName = item.mainItemNm,
-                        distance = item.distance,
-                        tellNumber = item.rprsntvTelNo,
-                        facilityAddress = item.fcltyAddr,
-                        facilityDetailAddress = item.fcltyDetailAddr,
-                        onClick = {
-                            viewModel.getFacility(
-                                item.id,
-                                uiState.cameraPosition.longitude,
-                                uiState.cameraPosition.latitude,
-                            )
-                            viewModel.setIsSelected(true)
-                            navController.popBackStack()
-                        },
-                        isButton = true
-                    )
-                }
+            if (uiState.facilityList.isNotEmpty()) {
+                LazyColumn(modifier = Modifier.fillMaxWidth().padding(top = 80.dp)) {
+                    item {
+                        Text(
+                            "\"${uiState.baseSearchText}\" 검색결과",
+                            modifier = Modifier.padding(start = 24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    items(uiState.facilityList) { item ->
+                        FacilityDetail(
+                            modifier = Modifier,
+                            facilityName = item.fcltyNm,
+                            eventName = item.mainItemNm,
+                            distance = item.distance,
+                            tellNumber = item.rprsntvTelNo,
+                            facilityAddress = item.fcltyAddr,
+                            facilityDetailAddress = item.fcltyDetailAddr,
+                            onClick = {
+                                viewModel.getFacility(
+                                    item.id,
+                                    uiState.cameraPosition.longitude,
+                                    uiState.cameraPosition.latitude,
+                                )
+                                viewModel.setIsSelected(true)
+                                navController.popBackStack()
+                            },
+                            isButton = true
+                        )
+                    }
 
+                }
+            }
+            else {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "결과가 없습니다",
+                    fontFamily = pretendard,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp,
+                    color = gray2
+                )
             }
         }
         else {
-            Column(
-                modifier = Modifier
-                    .offset(y = 70.dp)
-            ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(18.dp)
+            if (uiState.eventList.isNotEmpty() or uiState.searchFacilityList.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .offset(y = 70.dp)
                 ) {
-                    items(uiState.eventList) { item ->
-                        EventItem(
-                            text = item,
-                            onClick = {
-                                viewModel.eventSearch(
-                                    uiState.cameraPosition.longitude,
-                                    uiState.cameraPosition.latitude,
-                                    item
-                                )
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(18.dp))
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(18.dp)
-                ) {
-                    items(uiState.searchFacilityList) { item ->
-                        FacilityItem(
-                            text = item.fcltyNm,
-                            onClick = {
-                                coroutineScope.launch {
-                                    viewModel.getFacility(
-                                        item.id,
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(18.dp)
+                    ) {
+                        items(uiState.eventList) { item ->
+                            EventItem(
+                                text = item,
+                                onClick = {
+                                    viewModel.eventSearch(
                                         uiState.cameraPosition.longitude,
                                         uiState.cameraPosition.latitude,
+                                        item
                                     )
-                                    viewModel.setIsSelected(true)
                                     navController.popBackStack()
                                 }
-                            }
-                        )
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(18.dp))
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(18.dp)
+                    ) {
+                        items(uiState.searchFacilityList) { item ->
+                            FacilityItem(
+                                text = item.fcltyNm,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        viewModel.getFacility(
+                                            item.id,
+                                            uiState.cameraPosition.longitude,
+                                            uiState.cameraPosition.latitude,
+                                        )
+                                        viewModel.setIsSelected(true)
+                                        navController.popBackStack()
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
+            }
+            else {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "결과가 없습니다",
+                    fontFamily = pretendard,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp,
+                    color = gray2
+                )
             }
         }
     }
