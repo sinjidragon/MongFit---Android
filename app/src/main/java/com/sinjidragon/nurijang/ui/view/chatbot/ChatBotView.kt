@@ -1,5 +1,7 @@
 package com.sinjidragon.nurijang.ui.view.chatbot
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sinjidragon.nurijang.R
+import com.sinjidragon.nurijang.ui.component.BaseAlert
 import com.sinjidragon.nurijang.ui.theme.gray
 import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.mainColor
@@ -70,142 +73,167 @@ fun ChatBotView(
             listState.scrollToItem(uiState.messages.size - 1)
         }
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .systemBarsPadding()
-    ){
-        Box(
+    LaunchedEffect(viewModel) {
+        Log.d("jalbwa","${viewModel.uiEffect}")
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                ChatBotSideEffect.Failed -> {
+                    Log.d("jalbwa","failed")
+                    viewModel.setIsError(true)
+                }
+            }
+        }
+    }
+    Box(Modifier.fillMaxSize().background(Color.White).systemBarsPadding()) {
+
+        AnimatedVisibility(visible = uiState.isError) {
+            BaseAlert(
+                contentText = uiState.errorText,
+                onDismissRequest = {
+                    viewModel.setIsError(false)
+                },
+                onButtonClick = {viewModel.setIsError(false)}
+            )
+        }
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(36.dp)
-        ){
-            Row (
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x =18.dp)
-                    .clickable { navController.popBackStack() }
-            ){
-                Image(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    painter = painterResource(R.drawable.back_icon),
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(Color.Black)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                    .fillMaxWidth()
+                    .height(36.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = 18.dp)
+                        .clickable { navController.popBackStack() }
+                ) {
+                    Image(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        painter = painterResource(R.drawable.back_icon),
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(Color.Black)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "나가기",
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        fontFamily = pretendard,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black
+                    )
+                }
                 Text(
-                    "나가기",
-                    modifier = Modifier.align(Alignment.CenterVertically),
+                    "AI 누리",
+                    modifier = Modifier.align(Alignment.Center),
                     fontFamily = pretendard,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black
                 )
             }
-            Text(
-                "AI 누리",
-                modifier = Modifier.align(Alignment.Center),
-                fontFamily = pretendard,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black
-            )
-        }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
-        LazyColumn (
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(22.dp),
-            modifier = Modifier.fillMaxWidth().weight(1f)
-        ){
-            item {
-                Spacer(Modifier.height(20.dp))
-            }
-            items(uiState.messages){ item->
-                when (item) {
-                    is MessageItem.MyMessageItem -> {
-                        MyMessageItem(item)
-                    }
-                    is MessageItem.BotMessageItem -> {
-                        BotMessageItem(item)
-                    }
-                    is MessageItem.RecommandMessageItem -> {
-                        RecommandMessageItem(item,viewModel)
-                    }
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(22.dp),
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
+                item {
+                    Spacer(Modifier.height(20.dp))
+                }
+                items(uiState.messages) { item ->
+                    when (item) {
+                        is MessageItem.MyMessageItem -> {
+                            MyMessageItem(item)
+                        }
 
+                        is MessageItem.BotMessageItem -> {
+                            BotMessageItem(item)
+                        }
+
+                        is MessageItem.RecommandMessageItem -> {
+                            RecommandMessageItem(item, viewModel)
+                        }
+
+                    }
+                }
+                item {
+                    Spacer(Modifier.height(20.dp))
                 }
             }
-            item {
-                Spacer(Modifier.height(20.dp))
-            }
-        }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(83.dp)
-        ){
-            Row(
-                modifier = Modifier.padding(top = 12.dp)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(gray))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(83.dp)
             ) {
-                BasicTextField(
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Send
-                    ),
-                    keyboardActions = KeyboardActions{
-                        if (uiState.message.isNotEmpty()) {
-                            viewModel.sendMessage(uiState.message)
-                            viewModel.updateMessage("")
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(start = 22.dp)
-                        .height(40.dp)
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(gray),
-                    value = uiState.message,
-                    textStyle = TextStyle(
-                        fontFamily = pretendard,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp,
-                        color = Color.Black
-                    ),
-                    onValueChange = viewModel::updateMessage,
-                    decorationBox = { innerTextField ->
-                        Box(
-                            contentAlignment = Alignment.CenterStart,
-                            modifier = Modifier.padding(start = 16.dp)
-                        ) {
-                            if (uiState.message.isEmpty()) {
-                                Text(
-                                    text = if(!uiState.isLaunch) "AI 누리에게 질문하기" else "응답을 생성하는 중입니다",
-                                    fontFamily = pretendard,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp,
-                                    color = gray2
-                                )
-                            }
-                            innerTextField()
-                        }
-                    },
-                    enabled = !(uiState.isLaunch)
-                )
-                Spacer(Modifier.width(8.dp))
-                Image(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = 22.dp)
-                        .clickable {
+                Row(
+                    modifier = Modifier.padding(top = 12.dp)
+                ) {
+                    BasicTextField(
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Send
+                        ),
+                        keyboardActions = KeyboardActions {
                             if (uiState.message.isNotEmpty()) {
                                 viewModel.sendMessage(uiState.message)
                                 viewModel.updateMessage("")
                             }
-                                   },
-                    painter = painterResource(R.drawable.send_icon),
-                    contentDescription = ""
-                )
+                        },
+                        modifier = Modifier
+                            .padding(start = 22.dp)
+                            .height(40.dp)
+                            .weight(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(gray),
+                        value = uiState.message,
+                        textStyle = TextStyle(
+                            fontFamily = pretendard,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                            color = Color.Black
+                        ),
+                        onValueChange = viewModel::updateMessage,
+                        decorationBox = { innerTextField ->
+                            Box(
+                                contentAlignment = Alignment.CenterStart,
+                                modifier = Modifier.padding(start = 16.dp)
+                            ) {
+                                if (uiState.message.isEmpty()) {
+                                    Text(
+                                        text = if (!uiState.isLaunch) "AI 누리에게 질문하기" else "응답을 생성하는 중입니다",
+                                        fontFamily = pretendard,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 14.sp,
+                                        color = gray2
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        },
+                        enabled = !(uiState.isLaunch)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Image(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(end = 22.dp)
+                            .clickable {
+                                if (uiState.message.isNotEmpty()) {
+                                    viewModel.sendMessage(uiState.message)
+                                    viewModel.updateMessage("")
+                                }
+                            },
+                        painter = painterResource(R.drawable.send_icon),
+                        contentDescription = ""
+                    )
+                }
             }
         }
     }

@@ -9,8 +9,6 @@ import com.sinjidragon.nurijang.remote.Client
 import com.sinjidragon.nurijang.remote.NoConnectivityException
 import com.sinjidragon.nurijang.remote.data.BotMessage
 import com.sinjidragon.nurijang.remote.data.SendMessageRequest
-import com.sinjidragon.nurijang.ui.view.MainSideEffect
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import javax.inject.Inject
 
 data class ChatBotState(
     val messages : List<MessageItem> = emptyList(),
