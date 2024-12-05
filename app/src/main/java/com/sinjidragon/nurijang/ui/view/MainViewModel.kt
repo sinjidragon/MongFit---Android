@@ -49,7 +49,7 @@ sealed interface MainSideEffect {
 }
 
 
-class MainViewModel : ViewModel() {
+class MainViewModel() : ViewModel() {
     private val _uiState = MutableStateFlow(MainData())
     val uiState = _uiState.asStateFlow()
 
