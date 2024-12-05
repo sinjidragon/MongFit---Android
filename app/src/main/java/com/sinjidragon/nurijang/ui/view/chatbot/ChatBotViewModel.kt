@@ -9,6 +9,7 @@ import com.sinjidragon.nurijang.remote.Client
 import com.sinjidragon.nurijang.remote.NoConnectivityException
 import com.sinjidragon.nurijang.remote.data.BotMessage
 import com.sinjidragon.nurijang.remote.data.SendMessageRequest
+import com.sinjidragon.nurijang.ui.view.MainSideEffect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,13 +80,13 @@ class ChatBotViewModel: ViewModel() {
                 val response = chatBotService.startChat()
                 updateThreadId(response.id)
                 println(uiState.value.threadId)
-            } catch (e: HttpException) {
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(ChatBotSideEffect.Failed)
             }
             catch (e: NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
                 Log.d("jalbwa","오류")
+                _uiEffect.emit(ChatBotSideEffect.Failed)
+            }catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(ChatBotSideEffect.Failed)
             }
         }
@@ -136,13 +137,12 @@ class ChatBotViewModel: ViewModel() {
                 }catch(e: JsonSyntaxException) {
                     changeLastMessage(MessageItem.BotMessageItem(response))
                 }
-            } catch (e: HttpException) {
-                updateIsLaunch(false)
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(ChatBotSideEffect.Failed)
-            }catch (e:NoConnectivityException){
+            } catch (e:NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
                 Log.d("jalbwa","오류")
+                _uiEffect.emit(ChatBotSideEffect.Failed)
+            } catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(ChatBotSideEffect.Failed)
             }
         }

@@ -115,13 +115,13 @@ class MainViewModel() : ViewModel() {
                 val request = GetFacilitiesRequest(lo,la)
                 val response = facilityService.getFacilities(request)
                 setData(response)
-            } catch (e: HttpException) {
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(MainSideEffect.Failed)
             }
             catch (e:NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
                 Log.d("jalbwa","오류")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -134,13 +134,13 @@ class MainViewModel() : ViewModel() {
                 val response = searchService.suggestions(request)
                 setEventList(response.mainItems)
                 setSearchFacilityList(response.facilities)
-            } catch (e: HttpException) {
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(MainSideEffect.Failed)
             }
             catch (e:NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
                 Log.d("jalbwa","오류")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -153,12 +153,12 @@ class MainViewModel() : ViewModel() {
                 val response = searchService.eventSearch(request)
                 setData(response)
                 println(uiState.value.facilityList)
-            } catch (e: HttpException) {
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(MainSideEffect.Failed)
             }
             catch (e:NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -171,12 +171,12 @@ class MainViewModel() : ViewModel() {
                 val response = facilityService.getFacility(request)
                 setSelectFacility(response)
                 setData(listOf(response))
-            } catch (e: HttpException) {
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(MainSideEffect.Failed)
             }
             catch (e:NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
@@ -188,12 +188,12 @@ class MainViewModel() : ViewModel() {
                 val request = SearchRequest(lo,la,text)
                 val response = searchService.baseSearch(request)
                 setData(response)
-            } catch (e: HttpException) {
-                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
-                _uiEffect.emit(MainSideEffect.Failed)
             }
             catch (e:NoConnectivityException){
                 setErrorText("네트워크 연결을 확인해 주세요")
+                _uiEffect.emit(MainSideEffect.Failed)
+            }catch (e: Exception) {
+                setErrorText("서버와의 통신과정에서 오류가 발생하였습니다.")
                 _uiEffect.emit(MainSideEffect.Failed)
             }
         }
