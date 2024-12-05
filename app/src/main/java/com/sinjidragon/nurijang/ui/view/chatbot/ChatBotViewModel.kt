@@ -1,10 +1,12 @@
 package com.sinjidragon.nurijang.ui.view.chatbot
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.sinjidragon.nurijang.remote.Client
+import com.sinjidragon.nurijang.remote.NoConnectivityException
 import com.sinjidragon.nurijang.remote.data.BotMessage
 import com.sinjidragon.nurijang.remote.data.SendMessageRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,8 +37,7 @@ sealed class MessageItem {
 sealed interface ChatBotSideEffect {
     data object Failed : ChatBotSideEffect
 }
-@HiltViewModel
-class ChatBotViewModel@Inject constructor( private val client: Client ): ViewModel() {
+class ChatBotViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(ChatBotState())
     val uiState = _uiState.asStateFlow()
 
@@ -68,12 +69,15 @@ class ChatBotViewModel@Inject constructor( private val client: Client ): ViewMod
     fun startChatBot() {
         viewModelScope.launch {
             try {
-                val chatBotService = client.chatBotService
+                val chatBotService = Client.chatBotService
                 val response = chatBotService.startChat()
                 updateThreadId(response.id)
                 println(uiState.value.threadId)
             } catch (e: HttpException) {
                 _uiEffect.emit(ChatBotSideEffect.Failed)
+            }
+            catch (e: NoConnectivityException){
+                Log.d("hello","no internet")
             }
         }
     }
@@ -105,7 +109,7 @@ class ChatBotViewModel@Inject constructor( private val client: Client ): ViewMod
         }
         viewModelScope.launch {
             try{
-                val chatBotService = client.chatBotService
+                val chatBotService = Client.chatBotService
                 val threadId = uiState.value.threadId
                 val request = SendMessageRequest(threadId,message)
                 val response = chatBotService.sendMessage(request)
@@ -126,6 +130,8 @@ class ChatBotViewModel@Inject constructor( private val client: Client ): ViewMod
             } catch (e: HttpException) {
                 updateIsLaunch(false)
                 _uiEffect.emit(ChatBotSideEffect.Failed)
+            }catch (e:NoConnectivityException){
+                Log.d("hello","no internet")
             }
         }
     }
