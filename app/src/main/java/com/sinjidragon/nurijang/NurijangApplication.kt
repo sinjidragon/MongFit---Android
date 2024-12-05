@@ -10,13 +10,18 @@ class NurijangApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        fun getContext() = context.applicationContext
+        context = this.applicationContext
     }
 
     companion object {
         @SuppressLint("StaticFieldLeak")
         private lateinit var context: Context
 
-        fun getContext() = context.applicationContext
+        fun getContext(): Context {
+            if (!::context.isInitialized) {
+                throw IllegalStateException("Application context has not been initialized.")
+            }
+            return context
+        }
     }
 }
