@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException
 import com.sinjidragon.nurijang.remote.Client
 import com.sinjidragon.nurijang.remote.data.BotMessage
 import com.sinjidragon.nurijang.remote.data.SendMessageRequest
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import javax.inject.Inject
 
 data class ChatBotState(
     val messages : List<MessageItem> = emptyList(),
@@ -33,7 +35,8 @@ sealed class MessageItem {
 sealed interface ChatBotSideEffect {
     data object Failed : ChatBotSideEffect
 }
-class ChatBotViewModel: ViewModel() {
+@HiltViewModel
+class ChatBotViewModel@Inject constructor( private val client: Client ): ViewModel() {
     private val _uiState = MutableStateFlow(ChatBotState())
     val uiState = _uiState.asStateFlow()
 
@@ -65,7 +68,7 @@ class ChatBotViewModel: ViewModel() {
     fun startChatBot() {
         viewModelScope.launch {
             try {
-                val chatBotService = Client.chatBotService
+                val chatBotService = client.chatBotService
                 val response = chatBotService.startChat()
                 updateThreadId(response.id)
                 println(uiState.value.threadId)
@@ -102,7 +105,7 @@ class ChatBotViewModel: ViewModel() {
         }
         viewModelScope.launch {
             try{
-                val chatBotService = Client.chatBotService
+                val chatBotService = client.chatBotService
                 val threadId = uiState.value.threadId
                 val request = SendMessageRequest(threadId,message)
                 val response = chatBotService.sendMessage(request)

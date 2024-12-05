@@ -1,6 +1,12 @@
 package com.sinjidragon.nurijang.remote
 
-import com.sinjidragon.nurijang.BuildConfig
+import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.sinjidragon.nurijang.BuildConfig.BASE_URL
+import com.sinjidragon.nurijang.NurijangApplication
 import com.sinjidragon.nurijang.remote.service.ChatBotService
 import com.sinjidragon.nurijang.remote.service.FacilityService
 import com.sinjidragon.nurijang.remote.service.SearchService
@@ -11,36 +17,31 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 object Client {
-    private var retrofit: Retrofit? = null
+    private var gson: Gson = GsonBuilder().setLenient().create()
 
-    private fun getClient(): Retrofit {
-        if (retrofit == null) {
-            val url = BuildConfig.BASE_URL
+    private val interceptorClient = OkHttpClient().newBuilder()
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .addInterceptor(
+            RequestInterceptor(
+                NetworkUtil(NurijangApplication.getContext())
+            )
+        )
+        .addInterceptor(ResponseInterceptor())
+        .build()
 
-
-            val okHttpClient = OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .build()
-
-            retrofit = Retrofit.Builder()
-                .baseUrl(url)
-                .client(okHttpClient)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        }
-        return retrofit!!
+    private val instance: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(interceptorClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson)).build()
     }
 
-    val facilityService: FacilityService by lazy {
-        getClient().create(FacilityService::class.java)
-    }
-    val searchService: SearchService by lazy {
-        getClient().create(SearchService::class.java)
-    }
-    val chatBotService: ChatBotService by lazy {
-        getClient().create(ChatBotService::class.java)
-    }
+
+    val facilityService: FacilityService by lazy { instance.create(FacilityService::class.java) }
+    val searchService: SearchService by lazy { instance.create(SearchService::class.java) }
+    val chatBotService: ChatBotService by lazy { instance.create(ChatBotService::class.java) }
 }
+

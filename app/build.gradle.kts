@@ -87,4 +87,5 @@ dependencies {
     implementation("com.google.maps.android:maps-compose-utils:6.2.1")
     implementation("com.google.maps.android:maps-compose-widgets:6.2.1")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.google.code.gson:gson:2.8.8")
 }
