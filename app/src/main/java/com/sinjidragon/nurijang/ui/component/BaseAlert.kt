@@ -28,11 +28,11 @@ import com.sinjidragon.nurijang.ui.theme.pretendard
 import com.sinjidragon.nurijang.ui.theme.subColor
 
 @Composable
-fun AlertDialogExample(
+fun BaseAlert(
     onDismissRequest: () -> Unit = {},
     onButtonClick: () -> Unit = {},
-    titleText: String = "알림",
-    contentText: String = "잠시 후 다시 시도해주세요",
+    titleText: String = "경고",
+    contentText: String = "인터넷에 연결되어 있지 않습니다.",
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -91,5 +91,5 @@ fun AlertDialogExample(
 @Preview
 @Composable
 fun ALPRV(){
-    AlertDialogExample()
+    BaseAlert()
 }
