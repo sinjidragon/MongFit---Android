@@ -313,7 +313,7 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
             ModalBottomSheet(
                 sheetState = facilityListState,
                 modifier = Modifier
-                    .height(650.dp)
+                    .fillMaxHeight(0.65f)
                     .innerShadow()
                     .align(Alignment.BottomCenter),
                 onDismissRequest = {
