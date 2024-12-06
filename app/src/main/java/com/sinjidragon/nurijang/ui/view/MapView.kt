@@ -67,6 +67,7 @@ import com.sinjidragon.nurijang.ui.theme.gray2
 import com.sinjidragon.nurijang.ui.theme.innerShadow
 import com.sinjidragon.nurijang.ui.theme.mainColor
 import com.sinjidragon.nurijang.ui.theme.pretendard
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,9 +147,10 @@ fun MapView(navController: NavController, viewModel: MainViewModel) {
         }
     }
     LaunchedEffect(currentBackStackEntry) {
+        delay(200L)
         if (currentBackStackEntry?.destination?.route == "map") {
             if (uiState.isSelected){
-                println("${uiState.selectFacility.fcltyCrdntLo} ${uiState.selectFacility.fcltyCrdntLa}")
+                Log.d("selectFa","${uiState.selectFacility}")
                 moveCamera(uiState.selectFacility.fcltyCrdntLo, uiState.selectFacility.fcltyCrdntLa)
             }
         }

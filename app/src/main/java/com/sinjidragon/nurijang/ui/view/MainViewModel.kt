@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 data class MainData(
     val facilityList: List<Facility> = emptyList(),
@@ -169,6 +168,7 @@ class MainViewModel() : ViewModel() {
                 val facilityService = Client.facilityService
                 val request = GetDetailRequest(id, lo, la)
                 val response = facilityService.getFacility(request)
+                Log.d("select","$response")
                 setSelectFacility(response)
                 setData(listOf(response))
             }
